@@ -1,0 +1,21 @@
+<resources>
+<!-- Base application theme. -->
+<style name="Theme.ChatKitAndroid" parent="Theme.Material3.DynamicColors.Dark">
+	<!-- Status bar color. -->
+	<!--		<item name="android:statusBarColor">@android:color/system_neutral1_900</item>-->
+	<!--		<item name="android:windowLightStatusBar">false</item>-->
+	<!--		<item name="android:navigationBarColor">@android:color</item>-->
+
+
+</style>
+
+<style name="Theme.ChatKitAndroid.BottomNavBar" parent="Theme.ChatKitAndroid">
+
+</style>
+
+<style name="Theme.ChatKitAndroid.NoActionBar">
+	<item name="windowActionBar">false</item>
+	<item name="windowNoTitle">true</item>
+</style>
+
+</resources>
