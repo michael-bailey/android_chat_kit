@@ -4,7 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.widget.Toast
-import io.github.michael_bailey.gym_log_book.extension.any.log
+import io.github.michael_bailey.android_chat_kit.extension.any.log
 
 class ServerConnectionService : Service() {
 

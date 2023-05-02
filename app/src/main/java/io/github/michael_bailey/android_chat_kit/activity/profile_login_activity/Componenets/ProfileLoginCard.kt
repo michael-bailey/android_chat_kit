@@ -33,17 +33,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import io.github.michael_bailey.android_chat_kit.database.dao.EntProfileDao
 import io.github.michael_bailey.android_chat_kit.database.entity.EntProfile
+import io.github.michael_bailey.android_chat_kit.theme.smallUUID
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileLoginCard(
 	index: Int,
 	max: Int,
-	profile: EntProfile,
+	profile: EntProfileDao.EntProfileOverview,
 	onSubmit: (String) -> Unit
 ) {
 
@@ -53,9 +56,10 @@ fun ProfileLoginCard(
 	val cornerEnd = 16.dp
 	val cornerNormal = 8.dp
 
-	val corner = when (index) {
-		0 -> RoundedCornerShape(cornerEnd, cornerEnd, cornerNormal, cornerNormal)
-		max -> RoundedCornerShape(cornerNormal,cornerNormal, cornerEnd, cornerEnd)
+	val corner = when {
+		max == 1 -> RoundedCornerShape(cornerEnd, cornerEnd, cornerEnd, cornerEnd)
+		index == 0 -> RoundedCornerShape(cornerEnd, cornerEnd, cornerNormal, cornerNormal)
+		index == max-1 -> RoundedCornerShape(cornerNormal,cornerNormal, cornerEnd, cornerEnd)
 		else -> RoundedCornerShape(cornerNormal)
 	}
 
@@ -79,7 +83,14 @@ fun ProfileLoginCard(
 					Arrangement.SpaceBetween,
 					Alignment.CenterVertically
 				) {
-					Text("${profile.username}")
+					Column {
+						Text("${profile.username}")
+						Text(
+							"${profile.uuid.toString().slice(0..12)}...",
+							fontSize = smallUUID,
+							fontWeight = FontWeight(400)
+						)
+					}
 					Button(
 						modifier = Modifier
 							.width(42.dp)
@@ -104,7 +115,6 @@ fun ProfileLoginCard(
 					keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
 					keyboardActions = KeyboardActions(onGo = {onSubmit(passwordState)})
 				)
-
 			}
 		}
 	}

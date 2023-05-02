@@ -20,6 +20,6 @@ class EntProfile(val username: String, password: String) {
 
 	init {
 		this.salt = PasswordUtils.generateSalt()
-		this.password = PasswordUtils.hashPassword(password, salt)
+		this.password = PasswordUtils.hashPassword(password, salt).getOrThrow()
 	}
 }

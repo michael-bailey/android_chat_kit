@@ -39,7 +39,7 @@ abstract class EntProfileDao {
 			LIMIT 1
 		"""
 	)
-	abstract fun queryProfileOverview(uuid: UUID, password: String): LiveData<EntProfileOverview>
+	abstract fun queryProfileOverview(uuid: UUID): LiveData<EntProfileOverview>
 
 
 	@Query(

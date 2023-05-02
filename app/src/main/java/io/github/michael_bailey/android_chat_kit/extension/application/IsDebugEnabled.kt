@@ -1,7 +1,6 @@
-package io.github.michael_bailey.gym_log_book.extension.component_activity
+package io.github.michael_bailey.android_chat_kit.extension.application
 
 import android.app.Application
-import io.github.michael_bailey.gym_log_book.extension.application.preferences
 
 inline fun Application.isDebugEnabled() = preferences().let {
 	it.getBoolean("debug_enabled", false)

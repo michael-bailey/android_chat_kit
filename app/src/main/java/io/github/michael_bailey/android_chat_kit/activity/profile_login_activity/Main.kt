@@ -20,14 +20,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.michael_bailey.android_chat_kit.activity.profile_login_activity.Componenets.ProfileLoginList
 import io.github.michael_bailey.android_chat_kit.database.entity.EntProfile
+import io.github.michael_bailey.android_chat_kit.theme.ChatKitAndroidTheme
 import io.github.michael_bailey.android_chat_kit.theme.header
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Main(vm: ProfileLoginViewModel) {
+fun Main(vm: BaseProfileLoginViewModel) {
 
 	val profiles by vm.profiles.observeAsState(listOf())
 	val profilesTest = (0..100).map { EntProfile("profile $it", "password") }.toList()
@@ -66,4 +68,13 @@ fun Main(vm: ProfileLoginViewModel) {
 		},
 		bottomBar = {},
 	)
+}
+
+@Preview
+@Composable
+fun profileMainView() {
+	val vm = BaseProfileLoginViewModel.PreviewVM
+	ChatKitAndroidTheme {
+		Main(vm)
+	}
 }

@@ -8,7 +8,7 @@ import android.location.LocationManager
 import com.google.android.material.color.DynamicColors
 import io.github.michael_bailey.android_chat_kit.preferences.DebugPreferencesManager
 import io.github.michael_bailey.android_chat_kit.service.ServerConnectionService
-import io.github.michael_bailey.gym_log_book.extension.any.log
+import io.github.michael_bailey.android_chat_kit.extension.any.log
 
 /**
  * # Application

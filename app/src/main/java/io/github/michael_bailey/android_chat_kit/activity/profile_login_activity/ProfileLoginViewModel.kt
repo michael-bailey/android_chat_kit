@@ -4,19 +4,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import io.github.michael_bailey.android_chat_kit.data_class.ProfileAuthenticationToken
 import io.github.michael_bailey.android_chat_kit.database.dao.EntProfileDao
 import io.github.michael_bailey.android_chat_kit.database.entity.EntProfile
 import io.github.michael_bailey.android_chat_kit.utils.EncryptionUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class ProfileLoginViewModel(
-	private val profileDao: EntProfileDao
-): ViewModel() {
+	private val profileDao: EntProfileDao,
+): BaseProfileLoginViewModel(profileDao.queryProfileOverviews()) {
 
-	val profiles: LiveData<List<EntProfileDao.EntProfileOverview>> = profileDao.queryProfileOverviews()
-
-	fun createProfile(username: String, password: String) {
+	override fun createProfile(username: String, password: String) {
 		viewModelScope.launch(Dispatchers.IO) {
 			profileDao.insertProfile(
 				EntProfile(username = username, password = password)
@@ -24,11 +24,10 @@ class ProfileLoginViewModel(
 		}
 	}
 
-	fun getEncryptedUuid(uuid: UUID): String {
-		EncryptionUtils.
+	override fun getLoginToken(uuid: UUID, password: String, onSuccess: () -> Unit): Result<Unit> = runCatching {
+		val profile = profileDao.loadProfile(uuid, password)
+		val token = ProfileAuthenticationToken(uuid, EncryptionUtils.)
 	}
-
-
 
 	class Factory(
 		private val profileDao: EntProfileDao

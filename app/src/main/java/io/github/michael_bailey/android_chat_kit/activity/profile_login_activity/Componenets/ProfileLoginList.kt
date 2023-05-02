@@ -16,10 +16,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import io.github.michael_bailey.android_chat_kit.database.dao.EntProfileDao
 import io.github.michael_bailey.android_chat_kit.database.entity.EntProfile
 
 @Composable
-fun ProfileLoginList(modifier: Modifier? = null, profiles: List<EntProfile>) {
+fun ProfileLoginList(modifier: Modifier? = null, profiles: List<EntProfileDao.EntProfileOverview>) {
 
 	val ctx = LocalContext.current
 	val profiles = profiles.mapIndexed {i, e ->
@@ -42,7 +43,7 @@ fun ProfileLoginList(modifier: Modifier? = null, profiles: List<EntProfile>) {
 				items(items = profiles) { item ->
 					ProfileLoginCard(
 						index = item.first,
-						max = 100,
+						max = profiles.count(),
 						profile = item.second,
 						onSubmit = {
 							Toast(ctx).apply {

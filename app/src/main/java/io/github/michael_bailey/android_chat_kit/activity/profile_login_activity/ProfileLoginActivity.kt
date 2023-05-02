@@ -13,7 +13,7 @@ import androidx.room.Room
 import io.github.michael_bailey.android_chat_kit.database.AppDatabase
 import io.github.michael_bailey.android_chat_kit.service.ServerConnectionService
 import io.github.michael_bailey.android_chat_kit.theme.ChatKitAndroidTheme
-import io.github.michael_bailey.gym_log_book.extension.any.log
+import io.github.michael_bailey.android_chat_kit.extension.any.log
 
 class ProfileLoginActivity : ComponentActivity() {
 

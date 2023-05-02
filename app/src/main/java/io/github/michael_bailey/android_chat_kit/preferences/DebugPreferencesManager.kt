@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import io.github.michael_bailey.android_chat_kit.App
-import io.github.michael_bailey.gym_log_book.extension.application.preferences
+import io.github.michael_bailey.android_chat_kit.extension.application.preferences
 
 
 class DebugPreferencesManager(
