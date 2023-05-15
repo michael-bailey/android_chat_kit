@@ -10,16 +10,24 @@ import java.util.UUID
 	tableName = "profile",
 	indices = []
 )
-class EntProfile(val username: String, password: String) {
-
-	@PrimaryKey var uuid: UUID = UUID.randomUUID()
-	var createdTime: LocalDateTime = LocalDateTime.now()
-
-	var salt: String = PasswordUtils.generateSalt()
-	var password: String
-
-	init {
-		this.salt = PasswordUtils.generateSalt()
-		this.password = PasswordUtils.hashPassword(password, salt).getOrThrow()
+class EntProfile(
+	@PrimaryKey var uuid: UUID = UUID.randomUUID(),
+	var createdTime: LocalDateTime = LocalDateTime.now(),
+	
+	val username: String,
+	var salt: String,
+	var password: String,
+) {
+	
+	companion object {
+		fun create(
+			username: String,
+			password: String,
+			salt: String = PasswordUtils.generateSalt()
+		): EntProfile = EntProfile(
+			username = username,
+			salt = salt,
+			password = PasswordUtils.hashPassword(password, salt).getOrThrow(),
+		)
 	}
 }

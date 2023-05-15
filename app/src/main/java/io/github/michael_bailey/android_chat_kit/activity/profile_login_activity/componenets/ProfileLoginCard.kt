@@ -1,4 +1,4 @@
-package io.github.michael_bailey.android_chat_kit.activity.profile_login_activity.Componenets
+package io.github.michael_bailey.android_chat_kit.activity.profile_login_activity.componenets
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -38,8 +38,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import io.github.michael_bailey.android_chat_kit.database.dao.EntProfileDao
-import io.github.michael_bailey.android_chat_kit.database.entity.EntProfile
 import io.github.michael_bailey.android_chat_kit.theme.smallUUID
+import java.util.UUID
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -47,7 +47,7 @@ fun ProfileLoginCard(
 	index: Int,
 	max: Int,
 	profile: EntProfileDao.EntProfileOverview,
-	onSubmit: (String) -> Unit
+	onSubmit: (UUID, String) -> Unit
 ) {
 
 	var passwordState by remember { mutableStateOf("") }
@@ -113,7 +113,7 @@ fun ProfileLoginCard(
 					label = { Text("Password...") },
 					visualTransformation = PasswordVisualTransformation(),
 					keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
-					keyboardActions = KeyboardActions(onGo = {onSubmit(passwordState)})
+					keyboardActions = KeyboardActions(onGo = {onSubmit(profile.uuid, passwordState)})
 				)
 			}
 		}

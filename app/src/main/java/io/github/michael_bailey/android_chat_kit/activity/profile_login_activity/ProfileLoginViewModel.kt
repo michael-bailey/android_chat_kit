@@ -1,39 +1,43 @@
 package io.github.michael_bailey.android_chat_kit.activity.profile_login_activity
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
-import io.github.michael_bailey.android_chat_kit.data_class.ProfileAuthenticationToken
 import io.github.michael_bailey.android_chat_kit.database.dao.EntProfileDao
 import io.github.michael_bailey.android_chat_kit.database.entity.EntProfile
-import io.github.michael_bailey.android_chat_kit.utils.EncryptionUtils
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.UUID
 
 class ProfileLoginViewModel(
 	private val profileDao: EntProfileDao,
-): BaseProfileLoginViewModel(profileDao.queryProfileOverviews()) {
+	returnResult: (UUID, String) -> Unit
+): AbstractProfileLoginViewModel(profileDao.queryProfileOverviews(), returnResult) {
 
-	override fun createProfile(username: String, password: String) {
-		viewModelScope.launch(Dispatchers.IO) {
+	override suspend fun createProfile(username: String, password: String) {
+			val profile = EntProfile.create(username = username, password = password)
 			profileDao.insertProfile(
-				EntProfile(username = username, password = password)
+				profile
 			)
-		}
+			returnResult(profile.uuid, profile.password)
 	}
 
-	override fun getLoginToken(uuid: UUID, password: String, onSuccess: () -> Unit): Result<Unit> = runCatching {
-		val profile = profileDao.loadProfile(uuid, password)
-		val token = ProfileAuthenticationToken(uuid, EncryptionUtils.)
+	override suspend fun loginProfile(
+		uuid: UUID,
+		password: String,
+	) {
+		profileDao.loadProfile(uuid, password)
+			.onSuccess {
+				returnResult(it.uuid, it.password)
+			}.getOrThrow()
+//			.onFailure {
+//				viewModelScope.launch(Dispatchers.Main) { this@ProfileLoginViewModel._passwordError.value = it.message }
+//			}
 	}
 
 	class Factory(
-		private val profileDao: EntProfileDao
+		val profileDao: EntProfileDao,
+		private val returnResult: (UUID, String) -> Unit
 	): ViewModelProvider.Factory {
 		override fun <T : ViewModel> create(modelClass: Class<T>): T {
-			return ProfileLoginViewModel(profileDao) as T
+			return ProfileLoginViewModel(profileDao, returnResult) as T
 		}
 	}
 }

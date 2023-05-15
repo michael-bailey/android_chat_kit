@@ -2,6 +2,8 @@ package io.github.michael_bailey.android_chat_kit.utils
 
 import io.github.michael_bailey.android_chat_kit.utils.exceptions.PasswordUtilException
 import org.mindrot.jbcrypt.BCrypt
+import org.mindrot.jbcrypt.BCrypt.checkpw
+import org.mindrot.jbcrypt.BCrypt.hashpw
 
 /**
  * A utilities object for handling password operations
@@ -44,7 +46,7 @@ object PasswordUtils {
 		password: String,
 		salt: String,
 	): Result<String> = runCatching {
-		BCrypt.hashpw(password, salt)
+		hashpw(password, salt)
 	}
 
 	/**
@@ -53,6 +55,9 @@ object PasswordUtils {
 	fun checkPassword(
 		password: String,
 		hashedPassword: String,
-	): Boolean = BCrypt.checkpw(password, hashedPassword)
+	): Boolean {
+		val isPasswordCorrect = checkpw(password, hashedPassword)
+		return isPasswordCorrect
+	}
 
 }

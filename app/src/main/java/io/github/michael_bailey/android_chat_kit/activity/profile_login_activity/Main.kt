@@ -22,17 +22,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.michael_bailey.android_chat_kit.activity.profile_login_activity.Componenets.ProfileLoginList
-import io.github.michael_bailey.android_chat_kit.database.entity.EntProfile
+import io.github.michael_bailey.android_chat_kit.activity.profile_login_activity.componenets.ProfileLoginList
 import io.github.michael_bailey.android_chat_kit.theme.ChatKitAndroidTheme
 import io.github.michael_bailey.android_chat_kit.theme.header
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Main(vm: BaseProfileLoginViewModel) {
+fun Main(vm: AbstractProfileLoginViewModel) {
 
 	val profiles by vm.profiles.observeAsState(listOf())
-	val profilesTest = (0..100).map { EntProfile("profile $it", "password") }.toList()
 
 	Scaffold(
 		topBar = { TopAppBar(title = { Text("Login") }) },
@@ -52,14 +50,16 @@ fun Main(vm: BaseProfileLoginViewModel) {
 					if (profiles.isEmpty()) {
 						Text("No Profiles Create one using the button below")
 					} else {
-						ProfileLoginList(Modifier.height(300.dp), profiles = profiles)
+						ProfileLoginList(Modifier.height(300.dp), profiles = profiles) { id, pass ->
+							vm.login(uuid = id, password = pass)
+						}
 					}
 					Button(
 						modifier = Modifier
 							.height(100.dp)
 							.width(150.dp),
 						shape = RoundedCornerShape(16.dp),
-						onClick = { vm.createProfile("name", "password") }
+						onClick = { vm.create("name", "password") }
 					) {
 						Text("Add")
 					}
@@ -73,7 +73,7 @@ fun Main(vm: BaseProfileLoginViewModel) {
 @Preview
 @Composable
 fun profileMainView() {
-	val vm = BaseProfileLoginViewModel.PreviewVM
+	val vm = AbstractProfileLoginViewModel.PreviewVM
 	ChatKitAndroidTheme {
 		Main(vm)
 	}

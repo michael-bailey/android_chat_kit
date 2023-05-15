@@ -11,9 +11,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.room.Room
 import io.github.michael_bailey.android_chat_kit.database.AppDatabase
+import io.github.michael_bailey.android_chat_kit.extension.any.log
 import io.github.michael_bailey.android_chat_kit.service.ServerConnectionService
 import io.github.michael_bailey.android_chat_kit.theme.ChatKitAndroidTheme
-import io.github.michael_bailey.android_chat_kit.extension.any.log
+import java.util.UUID
 
 class ProfileLoginActivity : ComponentActivity() {
 
@@ -34,7 +35,7 @@ class ProfileLoginActivity : ComponentActivity() {
 		).build()
 
 		val vm: ProfileLoginViewModel by viewModels() {
-			ProfileLoginViewModel.Factory(db.profileDao())
+			ProfileLoginViewModel.Factory(db.profileDao(), this::returnResult)
 		}
 
 		setContent {
@@ -47,6 +48,19 @@ class ProfileLoginActivity : ComponentActivity() {
 					Main(vm)
 				}
 			}
+		}
+	}
+
+	/**
+	 * returns profile details to the requesting activity
+	 */
+	fun returnResult(uuid: UUID, password: String) {
+		Intent().apply {
+			// todo: TURN THIS INTO AN AUTH TOKEN SYSTEM
+			putExtra("uuid", uuid)
+			putExtra("password", password)
+			setResult(RESULT_OK, this)
+			finish()
 		}
 	}
 }

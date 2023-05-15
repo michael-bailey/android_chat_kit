@@ -39,7 +39,16 @@ abstract class EntProfileDao {
 			LIMIT 1
 		"""
 	)
-	abstract fun queryProfileOverview(uuid: UUID): LiveData<EntProfileOverview>
+	abstract fun genQueryProfileOverview(uuid: UUID): LiveData<EntProfileOverview>
+
+	@Query(
+		"""
+			SELECT uuid, username FROM profile
+			WHERE uuid == :uuid
+			LIMIT 1
+		"""
+	)
+	abstract fun queryProfileOverview(uuid: UUID): EntProfileOverview
 
 
 	@Query(
@@ -49,18 +58,33 @@ abstract class EntProfileDao {
 			LIMIT 1
 		"""
 	)
-	protected abstract fun queryProfile(uuid: UUID): EntProfile
+	protected abstract suspend fun queryProfile(uuid: UUID): EntProfile
 
-	fun loadProfile(
+	suspend fun loadProfile(
 		uuid: UUID,
 		password: String
 	): Result<EntProfile> = runCatching {
 		val profile = queryProfile(uuid)
+		val isPasswordCorrect = PasswordUtils.checkPassword(password, profile.password)
 
-		if (!PasswordUtils.checkPassword(password, profile.password)) {
+		if (!isPasswordCorrect) {
 			throw PasswordUtilException.PasswordIncorrectException()
 		}
 
+		profile
+	}
+	
+	suspend fun loadProfileFromHash(
+		uuid: UUID,
+		password: String
+	): Result<EntProfile> = runCatching {
+		val profile = queryProfile(uuid)
+		val isPasswordSame = profile.password == password
+		
+		if (!isPasswordSame) {
+			throw PasswordUtilException.PasswordIncorrectException()
+		}
+		
 		profile
 	}
 

@@ -2,11 +2,9 @@ package io.github.michael_bailey.android_chat_kit.utils
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import java.security.Key
 import java.security.KeyPair
 import java.security.KeyPairGenerator
 import java.security.KeyStore
-import java.security.KeyStore.PrivateKeyEntry
 import java.security.PrivateKey
 import java.security.PublicKey
 import java.security.Signature
@@ -38,9 +36,7 @@ object EncryptionUtils {
 			return privateKeyEntry.privateKey
 		}
 
-		val key
-
-		return keyPair.private
+		return generateMasterKey().private
 	}
 
 	private fun getMasterPublicKey(): PublicKey {
@@ -52,8 +48,10 @@ object EncryptionUtils {
 
 		// return key if found
 		if (privateKeyEntry != null) {
-			return privateKeyEntry.privateKey
+			return privateKeyEntry.certificate.publicKey
 		}
+
+		return generateMasterKey().public
 	}
 
 	private fun generateMasterKey(): KeyPair {
@@ -81,26 +79,33 @@ object EncryptionUtils {
 		initSign(key)
 	}
 
+	private inline fun getVerifier(key: PublicKey) = Signature.getInstance("SHA256withECDSA").apply {
+		initVerify(key)
+	}
 
-	private fun encryptWithMasterKey(input: String): String {
-		val cipher = getEncryptCipher(getMasterKey())
+
+	fun encryptWithMasterKey(input: String): String {
+		val cipher = getEncryptCipher(getMasterPublicKey())
 
 		return Base64.getEncoder()
 			.encodeToString(cipher.doFinal(input.toByteArray()))
 	}
 
-	private fun decryptWithMasterKey(input: String): String {
-
-		val base64 = Base64.getDecoder()
-			.decode(input)
-
-		val cipher = getDecryptCipher(getMasterKey())
-
-		return String(cipher.doFinal(base64))
-	}
-
-	fun signWithMasterKey(input: ) {
+	private fun decryptWithMasterKey(input: String): String =
+		getDecryptCipher(getMasterPrivateKey())
+			.run { String(doFinal(Base64.getDecoder().decode(input))) }
 
 
+	fun signWithMasterKey(input: String): String = getSigner(getMasterPrivateKey())
+		.run {
+			update(input.toByteArray())
+			String(Base64.getEncoder().encode(sign()))
+		}
+
+	fun verifyWithMasterKey(input: String, signature: String): Boolean = getVerifier(
+		getMasterPublicKey()
+	).run {
+		update(input.toByteArray())
+		verify(signature.toByteArray())
 	}
 }

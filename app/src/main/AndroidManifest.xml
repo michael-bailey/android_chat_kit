@@ -21,17 +21,18 @@
 			android:name=".activity.home_activity.HomeActivity"
 			android:exported="true"
 			android:label="@string/title_activity_home"
-			android:theme="@style/Theme.ChatKitAndroid" />
+			android:theme="@style/Theme.ChatKitAndroid">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
 		<activity
 			android:name=".activity.profile_login_activity.ProfileLoginActivity"
 			android:exported="true"
 			android:label="@string/title_activity_profile_login"
 			android:theme="@style/Theme.ChatKitAndroid">
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN" />
 
-				<category android:name="android.intent.category.LAUNCHER" />
-			</intent-filter>
 		</activity>
 
 		<service

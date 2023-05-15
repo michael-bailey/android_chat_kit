@@ -1,6 +1,5 @@
-package io.github.michael_bailey.android_chat_kit.activity.profile_login_activity.Componenets
+package io.github.michael_bailey.android_chat_kit.activity.profile_login_activity.componenets
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,10 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import io.github.michael_bailey.android_chat_kit.database.dao.EntProfileDao
-import io.github.michael_bailey.android_chat_kit.database.entity.EntProfile
+import java.util.UUID
 
 @Composable
-fun ProfileLoginList(modifier: Modifier? = null, profiles: List<EntProfileDao.EntProfileOverview>) {
+fun ProfileLoginList(modifier: Modifier? = null, profiles: List<EntProfileDao.EntProfileOverview>, onSubmit: (UUID, String) -> Unit) {
 
 	val ctx = LocalContext.current
 	val profiles = profiles.mapIndexed {i, e ->
@@ -45,12 +44,7 @@ fun ProfileLoginList(modifier: Modifier? = null, profiles: List<EntProfileDao.En
 						index = item.first,
 						max = profiles.count(),
 						profile = item.second,
-						onSubmit = {
-							Toast(ctx).apply {
-								setText("Password $it")
-								show()
-							}
-						}
+						onSubmit = onSubmit
 					)
 				}
 			}
