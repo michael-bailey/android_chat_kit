@@ -1,8 +1,9 @@
-package io.github.michael_bailey.android_chat_kit.delegates.interfaces
+package io.github.michael_bailey.android_chat_kit.delegates
 
 import android.content.Context
 import androidx.room.Room
 import io.github.michael_bailey.android_chat_kit.database.AppDatabase
+import io.github.michael_bailey.android_chat_kit.delegates.interfaces.IDatabaseDelegate
 
 class AppDatabaseDelegate(context: Context): IDatabaseDelegate<AppDatabase> {
 	override val db: AppDatabase by lazy {
