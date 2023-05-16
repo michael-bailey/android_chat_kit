@@ -10,7 +10,10 @@ abstract class AbstractHomeViewModel(
 ): ViewModel() {
 	fun hasToken(): Boolean = token.value != null
 
-	fun setProfileToken(token: Pair<UUID,String>?) { this.token.value = token }
+	fun setProfileToken(token: Pair<UUID,String>?) {
+		this.token.value = token
+		onTokenSet()
+	}
 
 	abstract fun onTokenSet()
 

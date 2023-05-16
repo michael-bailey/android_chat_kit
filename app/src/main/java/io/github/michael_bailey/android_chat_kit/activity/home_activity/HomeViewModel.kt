@@ -1,7 +1,7 @@
 package io.github.michael_bailey.android_chat_kit.activity.home_activity
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -12,8 +12,8 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
 	val fetchToken: () -> Unit,
 	val profileDao: EntProfileDao,
-	private val _loggedInUser: MediatorLiveData<EntProfileDao.EntProfileOverview?> =
-		MediatorLiveData<EntProfileDao.EntProfileOverview?>()
+	private val _loggedInUser: MutableLiveData<EntProfileDao.EntProfileOverview?> =
+		MutableLiveData<EntProfileDao.EntProfileOverview?>()
 ): AbstractHomeViewModel(
 	fetchToken
 ) {
@@ -21,21 +21,19 @@ class HomeViewModel(
 	val loggedInUser: LiveData<EntProfileDao.EntProfileOverview?> = _loggedInUser
 
 	override fun onTokenSet() {
-		_loggedInUser.value = token.value?.let { profileDao.queryProfileOverview(it.first) }
+		token.value?.let {
+			viewModelScope.launch(Dispatchers.IO) {
+				val profile = profileDao.queryProfileOverview(it.first)
+				viewModelScope.launch(Dispatchers.Main) {
+					_loggedInUser.value = profile
+				}
+			}
+		}
 	}
 
 	init {
 		if (loggedInUser.value == null) {
 			fetchToken()
-		}
-		
-		_loggedInUser.value = null
-		_loggedInUser.addSource(token) {
-			it?.first?.let { it1 ->
-				viewModelScope.launch(Dispatchers.Main) {
-					_loggedInUser.value = profileDao.genQueryProfileOverview(it1).value
-				}
-			}
 		}
 	}
 
