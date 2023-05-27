@@ -16,21 +16,21 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.michael_bailey.android_chat_kit.activity.profile_login_activity.componenets.ProfileLoginList
-import io.github.michael_bailey.android_chat_kit.theme.ChatKitAndroidTheme
 import io.github.michael_bailey.android_chat_kit.theme.header
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Main(vm: AbstractProfileLoginViewModel) {
+fun Main(vm: ProfileLoginViewModel) {
 
 	val profiles by vm.profiles.observeAsState(listOf())
+	val activeCard by vm.activeProfileCard.collectAsState(initial = null)
 
 	Scaffold(
 		topBar = { TopAppBar(title = { Text("Login") }) },
@@ -50,7 +50,12 @@ fun Main(vm: AbstractProfileLoginViewModel) {
 					if (profiles.isEmpty()) {
 						Text("No Profiles Create one using the button below")
 					} else {
-						ProfileLoginList(Modifier.height(300.dp), profiles = profiles) { id, pass ->
+						ProfileLoginList(
+							Modifier.height(300.dp),
+							profiles = profiles,
+							activeCard = activeCard,
+							onExpanded = { cardNum -> vm.activateProfileCard(if (activeCard == cardNum) null else cardNum)}
+						) { id, pass ->
 							vm.login(uuid = id, password = pass)
 						}
 					}
@@ -70,11 +75,3 @@ fun Main(vm: AbstractProfileLoginViewModel) {
 	)
 }
 
-@Preview
-@Composable
-fun profileMainView() {
-	val vm = AbstractProfileLoginViewModel.PreviewVM
-	ChatKitAndroidTheme {
-		Main(vm)
-	}
-}

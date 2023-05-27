@@ -1,48 +1,54 @@
 package io.github.michael_bailey.android_chat_kit.activity.home_activity
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.content.Context
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import io.github.michael_bailey.android_chat_kit.database.dao.EntProfileDao
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.michael_bailey.android_chat_kit.broadcasters.LoginStatusBroadcastReceiver
+import io.github.michael_bailey.android_chat_kit.repository.LoginRepository
+import io.github.michael_bailey.android_chat_kit.repository.ProfileRepository
+import io.github.michael_bailey.android_chat_kit.repository.TokenRepository
+import io.github.michael_bailey.android_chat_kit.utils.login.LoginStatus
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.util.UUID
+import javax.inject.Inject
 
-class HomeViewModel(
-	val fetchToken: () -> Unit,
-	val profileDao: EntProfileDao,
-	private val _loggedInUser: MutableLiveData<EntProfileDao.EntProfileOverview?> =
-		MutableLiveData<EntProfileDao.EntProfileOverview?>()
-): AbstractHomeViewModel(
-	fetchToken
-) {
-
-	val loggedInUser: LiveData<EntProfileDao.EntProfileOverview?> = _loggedInUser
-
-	override fun onTokenSet() {
-		token.value?.let {
-			viewModelScope.launch(Dispatchers.IO) {
-				val profile = profileDao.queryProfileOverview(it.first)
-				viewModelScope.launch(Dispatchers.Main) {
-					_loggedInUser.value = profile
-				}
-			}
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+	private val loginRepository: LoginRepository,
+	private val profileRepository: ProfileRepository,
+	private val tokenRepository: TokenRepository,
+	private val localBroadcastManager: LocalBroadcastManager,
+	
+): ViewModel() {
+	
+	private val _isLoggedIn = MutableStateFlow(loginRepository.isLoggedIn)
+	private val _profile = _isLoggedIn.map {
+		tokenRepository.getToken()?.first?.let { it1 ->
+			profileRepository.getProfileOverview(
+				it1
+			)
 		}
 	}
+	private val _server =
 
-	init {
-		if (loggedInUser.value == null) {
-			fetchToken()
-		}
+	val profileOverview = _profile.asLiveData()
+	val isLoggedIn = _isLoggedIn.asLiveData()
+	
+	fun setProfileToken(token: Pair<UUID, String>?) = viewModelScope.launch(Dispatchers.Main) {
+		if (token == null) return@launch
+		loginRepository.setLoginToken(token)
+		_isLoggedIn.emit(loginRepository.isLoggedIn)
 	}
-
-	class Factory(
-		val fetchToken: () -> Unit,
-		val profileDao: EntProfileDao,
-	): ViewModelProvider.Factory {
-		override fun <T : ViewModel> create(modelClass: Class<T>): T {
-			return HomeViewModel(fetchToken, profileDao) as T
-		}
+	
+	fun logout(ctx: Context) = viewModelScope.launch {
+		loginRepository.logout()
+		_isLoggedIn.emit(loginRepository.isLoggedIn)
+		LoginStatusBroadcastReceiver.broadcast(ctx, LoginStatus.LoggedOut)
 	}
 }

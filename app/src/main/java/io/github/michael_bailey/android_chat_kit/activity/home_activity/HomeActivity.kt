@@ -3,6 +3,7 @@ package io.github.michael_bailey.android_chat_kit.activity.home_activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -11,50 +12,49 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.room.Room
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.michael_bailey.android_chat_kit.activity.profile_login_activity.contract.ProfileLoginContract
-import io.github.michael_bailey.android_chat_kit.database.AppDatabase
 import io.github.michael_bailey.android_chat_kit.theme.ChatKitAndroidTheme
 
-class HomeActivity : ComponentActivity() {
-
-	val activityLauncher = registerForActivityResult(ProfileLoginContract()) { result ->
+@AndroidEntryPoint
+class HomeActivity: ComponentActivity() {
+	
+	private val activityLauncher: ActivityResultLauncher<Unit> = registerForActivityResult(ProfileLoginContract()) { result ->
+		if (result == null) {
+			this.launchLoginActivity()
+		}
 		vm.setProfileToken(result)
 	}
-
-	private lateinit var vm: HomeViewModel
-	private lateinit var db: AppDatabase
+	
+	private val vm: HomeViewModel by viewModels()
+	
+	private fun launchLoginActivity() {
+		this.activityLauncher.launch(Unit)
+	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-
-		db = Room.databaseBuilder(
-			applicationContext,
-			AppDatabase::class.java,
-			"gym_log_book_db"
-		).build()
-
-		val vm: HomeViewModel by viewModels {
-			HomeViewModel.Factory({ activityLauncher.launch(Unit) }, db.profileDao())
-		}
-		this.vm = vm
-
+		
 		setContent {
 			ChatKitAndroidTheme {
-
-				val tokenState by vm.loggedInUser.observeAsState()
-				if (tokenState == null) {
-					Text(text = "Not Logged In")
-					return@ChatKitAndroidTheme
-				}
-
-
-				// A surface container using the 'background' color from the theme
-				Surface(
-					modifier = Modifier.fillMaxSize(),
-					color = MaterialTheme.colorScheme.background
-				) {
-					Main("Android")
+				val isLoggedIn by vm.isLoggedIn.observeAsState()
+				when (isLoggedIn) {
+					null -> {
+						Text(text = "Loading")
+					}
+					false -> {
+						Text(text = "Not Logged In")
+						activityLauncher.launch(Unit)
+						return@ChatKitAndroidTheme
+					}
+					true -> {
+						Surface(
+							modifier = Modifier.fillMaxSize(),
+							color = MaterialTheme.colorScheme.background
+						) {
+							Main(vm)
+						}
+					}
 				}
 			}
 		}

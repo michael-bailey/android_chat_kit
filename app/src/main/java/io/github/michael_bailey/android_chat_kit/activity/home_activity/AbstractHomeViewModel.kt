@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import java.util.UUID
 
 abstract class AbstractHomeViewModel(
-	fetchToken: () -> Unit,
 	protected var token: MutableLiveData<Pair<UUID, String>?> = MutableLiveData(null)
 ): ViewModel() {
 	fun hasToken(): Boolean = token.value != null

@@ -17,6 +17,7 @@ class EntProfile(
 	val username: String,
 	var salt: String,
 	var password: String,
+	
 ) {
 	
 	companion object {

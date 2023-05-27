@@ -48,7 +48,7 @@ abstract class EntProfileDao {
 			LIMIT 1
 		"""
 	)
-	abstract fun queryProfileOverview(uuid: UUID): EntProfileOverview
+	abstract suspend fun queryProfileOverview(uuid: UUID): EntProfileOverview
 
 
 	@Query(

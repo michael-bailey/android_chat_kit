@@ -8,38 +8,32 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.room.Room
-import io.github.michael_bailey.android_chat_kit.database.AppDatabase
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.michael_bailey.android_chat_kit.extension.any.log
-import io.github.michael_bailey.android_chat_kit.service.ServerConnectionService
 import io.github.michael_bailey.android_chat_kit.theme.ChatKitAndroidTheme
 import java.util.UUID
 
-class ProfileLoginActivity : ComponentActivity() {
-
-	private lateinit var db: AppDatabase
-
+@AndroidEntryPoint
+class ProfileLoginActivity: ComponentActivity() {
+	
+	private val vm: ProfileLoginViewModel by viewModels()
+	
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		log("onCreate")
-
-		val serviceIntent = Intent(this, ServerConnectionService::class.java)
-
-		startService(serviceIntent)
-
-		db = Room.databaseBuilder(
-			applicationContext,
-			AppDatabase::class.java,
-			"gym_log_book_db"
-		).build()
-
-		val vm: ProfileLoginViewModel by viewModels() {
-			ProfileLoginViewModel.Factory(db.profileDao(), this::returnResult)
-		}
-
+		
 		setContent {
+			val token by vm.recentToken.collectAsState(initial = null)
+			if (token != null) {
+				this.returnResult(token!!.first, token!!.second)
+			}
+			
+			
 			ChatKitAndroidTheme {
+				
 				// A surface container using the 'background' color from the theme
 				Surface(
 					modifier = Modifier.fillMaxSize(),
@@ -54,7 +48,7 @@ class ProfileLoginActivity : ComponentActivity() {
 	/**
 	 * returns profile details to the requesting activity
 	 */
-	fun returnResult(uuid: UUID, password: String) {
+	private fun returnResult(uuid: UUID, password: String) {
 		Intent().apply {
 			// todo: TURN THIS INTO AN AUTH TOKEN SYSTEM
 			putExtra("uuid", uuid)

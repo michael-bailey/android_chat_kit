@@ -47,11 +47,13 @@ fun ProfileLoginCard(
 	index: Int,
 	max: Int,
 	profile: EntProfileDao.EntProfileOverview,
+	isExpanded: Boolean,
+	onExpand: (Int) -> Unit,
 	onSubmit: (UUID, String) -> Unit
 ) {
 
 	var passwordState by remember { mutableStateOf("") }
-	var isDroppedDown by remember { mutableStateOf(false) }
+	
 
 	val cornerEnd = 16.dp
 	val cornerNormal = 8.dp
@@ -67,7 +69,7 @@ fun ProfileLoginCard(
 		shape = corner,
 		colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
 	) {
-		AnimatedContent(targetState = isDroppedDown) {
+		AnimatedContent(targetState = isExpanded) {
 			Column(
 				Modifier
 					.fillMaxSize()
@@ -97,17 +99,17 @@ fun ProfileLoginCard(
 							.height(42.dp)
 							.padding(0.dp),
 						contentPadding = PaddingValues(0.dp),
-						onClick = { isDroppedDown = !isDroppedDown }
+						onClick = { onExpand(index) }
 					) {
 						Icon(
-							modifier = Modifier.rotate(if (isDroppedDown) 180f else 0f),
+							modifier = Modifier.rotate(if (isExpanded) 180f else 0f),
 							imageVector = Icons.Default.ArrowDropDown,
 							contentDescription = ""
 						)
 					}
 				}
 
-				if (isDroppedDown) OutlinedTextField(
+				if (isExpanded) OutlinedTextField(
 					value = passwordState,
 					onValueChange = {passwordState = it},
 					label = { Text("Password...") },

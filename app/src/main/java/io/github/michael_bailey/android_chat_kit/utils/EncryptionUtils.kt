@@ -2,6 +2,7 @@ package io.github.michael_bailey.android_chat_kit.utils
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import androidx.security.crypto.MasterKeys
 import java.security.KeyPair
 import java.security.KeyPairGenerator
 import java.security.KeyStore
@@ -19,7 +20,10 @@ import javax.crypto.Cipher
 object EncryptionUtils {
 	private const val MASTER_KEY_NAME = "master"
 	private const val ALGORITHM = "RSA/ECB/PKCS1Padding"
-
+	
+	val keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC
+	val mainKeyAlias = MasterKeys.getOrCreate(keyGenParameterSpec)
+	
 	/**
 	 * fetches the apps master key
 	 */

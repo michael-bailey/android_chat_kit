@@ -19,7 +19,13 @@ import io.github.michael_bailey.android_chat_kit.database.dao.EntProfileDao
 import java.util.UUID
 
 @Composable
-fun ProfileLoginList(modifier: Modifier? = null, profiles: List<EntProfileDao.EntProfileOverview>, onSubmit: (UUID, String) -> Unit) {
+fun ProfileLoginList(
+	modifier: Modifier? = null,
+	profiles: List<EntProfileDao.EntProfileOverview>,
+	activeCard: Int?,
+	onExpanded: (Int) -> Unit,
+	onSubmit: (UUID, String) -> Unit
+) {
 
 	val ctx = LocalContext.current
 	val profiles = profiles.mapIndexed {i, e ->
@@ -44,6 +50,8 @@ fun ProfileLoginList(modifier: Modifier? = null, profiles: List<EntProfileDao.En
 						index = item.first,
 						max = profiles.count(),
 						profile = item.second,
+						isExpanded = item.first == activeCard,
+						onExpand = onExpanded,
 						onSubmit = onSubmit
 					)
 				}

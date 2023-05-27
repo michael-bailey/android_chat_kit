@@ -6,9 +6,11 @@ import android.content.Intent
 import android.hardware.biometrics.BiometricManager
 import android.location.LocationManager
 import com.google.android.material.color.DynamicColors
+import dagger.hilt.android.HiltAndroidApp
+import io.github.michael_bailey.android_chat_kit.extension.any.log
 import io.github.michael_bailey.android_chat_kit.preferences.DebugPreferencesManager
 import io.github.michael_bailey.android_chat_kit.service.ServerConnectionService
-import io.github.michael_bailey.android_chat_kit.extension.any.log
+
 
 /**
  * # Application
@@ -16,6 +18,7 @@ import io.github.michael_bailey.android_chat_kit.extension.any.log
  *
  * stores common system services and data models
  */
+@HiltAndroidApp
 class App(
 ): Application() {
 
@@ -44,10 +47,10 @@ class App(
 			.getSystemService(BIOMETRIC_SERVICE) as BiometricManager
 
 		appDebugPreferencesManager = DebugPreferencesManager(this)
-
-		val serviceintent = Intent(this, ServerConnectionService::class.java)
-
-		startService(serviceintent)
+//
+//		val serviceintent = Intent(this, ServerConnectionService::class.java)
+//
+//		startService(serviceintent)
 
 	}
 

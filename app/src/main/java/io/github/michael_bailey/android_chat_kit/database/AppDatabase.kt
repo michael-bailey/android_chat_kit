@@ -18,7 +18,7 @@ import io.github.michael_bailey.gym_log_book.database.converter.UUIDConverter
 		EntProfile::class,
 		EntServer::class
  	],
-	version = 1,
+	version = 2,
 	exportSchema = true
 )
 @TypeConverters(
