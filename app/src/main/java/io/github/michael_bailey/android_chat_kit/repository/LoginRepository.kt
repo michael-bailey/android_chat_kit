@@ -1,5 +1,6 @@
 package io.github.michael_bailey.android_chat_kit.repository
 
+import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.UUID
 import javax.inject.Inject
 
@@ -15,6 +16,9 @@ class LoginRepository @Inject constructor(
 	private val profileRepository: ProfileRepository
 ) {
 	
+	private val _isLoggedInFlow: MutableStateFlow<Boolean> =
+		MutableStateFlow(tokenRepository.getToken() != null)
+	
 	/**
 	 * token pair of the logged in user
 	 */
@@ -25,11 +29,14 @@ class LoginRepository @Inject constructor(
 	 */
 	val isLoggedIn: Boolean get() = token != null
 	
+	
+	
 	/**
 	 * sets loginToken
 	 */
 	fun setLoginToken(token: Pair<UUID, String>) {
 		tokenRepository.saveToken(token)
+		
 	}
 	
 	/**

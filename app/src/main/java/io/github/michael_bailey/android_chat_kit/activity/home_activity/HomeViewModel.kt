@@ -35,7 +35,7 @@ class HomeViewModel @Inject constructor(
 			)
 		}
 	}
-	private val _server =
+	//	private val _server =
 
 	val profileOverview = _profile.asLiveData()
 	val isLoggedIn = _isLoggedIn.asLiveData()

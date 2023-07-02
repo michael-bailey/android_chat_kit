@@ -33,13 +33,17 @@ class RepositoryProviderModule {
 	)
 	
 	@Provides
-	fun provideLoginManager(
+	fun provideLoginRepository(
 		@ApplicationContext context: Context,
 		tokenRepository: TokenRepository,
 		profileRepository: ProfileRepository
 	): LoginRepository = LoginRepository(
 		tokenRepository = tokenRepository,
 		profileRepository = profileRepository,
-
+	)
+	
+	@Provides
+	fun provideServerRepository(
+	): ServerRepository = ServerRepository(
 	)
 }

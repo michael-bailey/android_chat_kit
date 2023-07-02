@@ -5,8 +5,11 @@ import android.content.Intent
 import android.os.IBinder
 import android.widget.Toast
 import io.github.michael_bailey.android_chat_kit.extension.any.log
+import io.github.michael_bailey.android_chat_kit.repository.ServerRepository
 
-class ServerConnectionService : Service() {
+class ServerConnectionService(
+	private val serverRepository: ServerRepository
+) : Service() {
 
 	override fun onCreate() {
 		super.onCreate()
@@ -17,13 +20,15 @@ class ServerConnectionService : Service() {
 		}
 
 	}
+	
+	override fun onBind(intent: Intent?): IBinder? = null
 
-	override fun onBind(intent: Intent): IBinder {
-		TODO("Return the communication channel to the service.")
-	}
+
 
 	override fun onDestroy() {
 		super.onDestroy()
 		log("onDestroy")
 	}
+	
+	
 }

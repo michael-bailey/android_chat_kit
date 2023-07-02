@@ -5,6 +5,10 @@ import io.github.michael_bailey.android_chat_kit.database.dao.EntProfileDao
 import io.github.michael_bailey.android_chat_kit.database.entity.EntProfile
 import io.github.michael_bailey.android_chat_kit.utils.PasswordUtils
 import io.github.michael_bailey.android_chat_kit.utils.exceptions.PasswordUtilException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
 
@@ -18,6 +22,30 @@ class TokenRepository @Inject constructor(
 	private val profileDao: EntProfileDao,
 	private val preferences: SharedPreferences,
 ) {
+	private val repositoryScope = CoroutineScope(Dispatchers.IO)
+	
+	private val _preferenceListener =
+		preferences.registerOnSharedPreferenceChangeListener { sharedPreferences, key ->
+			repositoryScope.launch {
+				when (key) {
+					uuid_key -> _uuidFlow.emit(
+						sharedPreferences.getString(key, null)?.let {
+							UUID.fromString(it)
+						})
+					hash_key -> _hashFlow.emit(
+							sharedPreferences.getString(key, null)
+						)
+				}
+			}
+	}
+
+	
+	
+	
+	private val _uuidFlow = MutableStateFlow<UUID?>(null)
+	private val _hashFlow = MutableStateFlow<String?>(null)
+	
+	
 	suspend fun getToken(uuid: UUID, password: String): Result<Token> = runCatching {
 		val profile = profileDao.loadProfile(uuid, password).getOrThrow()
 		profile.uuid to profile.password

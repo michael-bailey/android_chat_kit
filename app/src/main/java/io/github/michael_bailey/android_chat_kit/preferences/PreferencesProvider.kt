@@ -15,11 +15,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class PreferencesProvider {
 	
-//	@Provides
-//	@Singleton
-//	fun providePreferences(@ApplicationContext context: Context): SharedPreferences =
-//		(context as Application).preferences()
-	
 	@Provides
 	@Singleton
 	fun provideEncryptedPreferences(@ApplicationContext context: Context): SharedPreferences =
