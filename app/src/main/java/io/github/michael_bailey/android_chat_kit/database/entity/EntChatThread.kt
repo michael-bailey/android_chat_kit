@@ -5,11 +5,10 @@ import androidx.room.PrimaryKey
 import java.util.UUID
 
 @Entity(
-	tableName = "contact",
+	tableName = "chat_thread",
 	indices = []
 )
-data class EntContact(
+data class EntChatThread(
 	@PrimaryKey var uuid: UUID,
-	var username: String,
-	var nickname: String = "",
+	var name: String = "",
 )

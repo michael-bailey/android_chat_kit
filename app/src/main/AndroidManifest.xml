@@ -23,6 +23,11 @@
         android:theme="@style/Theme.ChatKitAndroid"
         tools:targetApi="31">
         <activity
+            android:name=".activity.connected_server_activity.ConnectedServerActivity"
+            android:exported="false"
+            android:label="@string/title_activity_connected_server"
+            android:theme="@style/Theme.ChatKitAndroid" />
+        <activity
             android:name=".activity.thread_activity.ThreadActivity"
             android:exported="false"
             android:label="@string/title_activity_thread"
@@ -47,7 +52,7 @@
             android:name=".activity.profile_login_activity.ProfileLoginActivity"
             android:exported="true"
             android:label="@string/title_activity_profile_login"
-            android:theme="@style/Theme.ChatKitAndroid"></activity>
+            android:theme="@style/Theme.ChatKitAndroid" />
 
         <service
             android:name=".service.ServerConnectionService"

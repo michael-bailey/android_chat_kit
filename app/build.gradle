@@ -4,6 +4,7 @@ plugins {
     id 'com.google.dagger.hilt.android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.22'
 }
 
 kapt {
@@ -87,11 +88,16 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     implementation platform('androidx.compose:compose-bom:2022.10.00')
+    implementation platform('androidx.compose:compose-bom:2022.10.00')
+    androidTestImplementation platform('androidx.compose:compose-bom:2022.10.00')
     androidTestImplementation platform('androidx.compose:compose-bom:2022.10.00')
     kapt "androidx.room:room-compiler:$room_version"
 
     // gson deps
     implementation "com.google.code.gson:gson:$gson_version"
+
+    // json deps
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0'
 
     // work manager deps
     implementation "androidx.work:work-runtime:$work_version"
@@ -102,7 +108,6 @@ dependencies {
 
     // security deps
     implementation "androidx.security:security-crypto:$security_version"
-
 
     // bcrypt deps
     implementation 'org.mindrot:jbcrypt:0.4'

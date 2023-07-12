@@ -7,6 +7,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.github.michael_bailey.android_chat_kit.database.dao.EntContactDao
+import io.github.michael_bailey.android_chat_kit.database.dao.EntMessageDao
 import io.github.michael_bailey.android_chat_kit.database.dao.EntProfileDao
 import io.github.michael_bailey.android_chat_kit.database.dao.EntServerDao
 import javax.inject.Singleton
@@ -33,4 +35,13 @@ class AppDatabaseProvider {
 		return appDatabase.serverDao()
 	}
 	
+	@Provides
+	fun provideContactDao(appDatabase: AppDatabase): EntContactDao {
+		return appDatabase.contactDao()
+	}
+	
+	@Provides
+	fun provideMessageDao(appDatabase: AppDatabase): EntMessageDao {
+		return appDatabase.messageDao()
+	}
 }

@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -42,6 +43,10 @@ fun Main(vm: HomeViewModel) {
 	val profile by vm.profileOverview.observeAsState()
 	
 	val colour = Color(SurfaceColors.SURFACE_2.getColor(context))
+	
+	val currentRoute = nav
+		.currentBackStackEntryFlow
+		.collectAsState(initial = nav.currentBackStackEntry)
 	
 	Scaffold(
 		containerColor = colour,
@@ -77,6 +82,13 @@ fun Main(vm: HomeViewModel) {
 						Server.compose(this, vm)
 					}
 				}
+			}
+		},
+		floatingActionButton = {
+			when(currentRoute.value?.destination?.route) {
+				Home.route -> {Home.Fab(vm)}
+				Chat.route -> {Chat.Fab(vm)}
+				Server.route -> {Server.Fab(vm)}
 			}
 		},
 		bottomBar = {

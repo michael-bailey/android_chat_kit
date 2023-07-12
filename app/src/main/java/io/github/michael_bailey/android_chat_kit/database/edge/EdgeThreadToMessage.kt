@@ -7,8 +7,8 @@ import java.util.UUID
 @Entity(
 	tableName = "thread_to_contact"
 )
-data class EdgeThreadToContact(
+data class EdgeThreadToMessage(
 	@PrimaryKey val uuid: UUID = UUID.randomUUID(),
-	val thread: UUID,
+	val chatThread: UUID,
 	val contact: UUID,
 )

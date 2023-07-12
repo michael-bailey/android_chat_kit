@@ -13,5 +13,4 @@ data class EntMessage(
 	@PrimaryKey var uuid: UUID = UUID.randomUUID(),
 	var createdTime: LocalDateTime = LocalDateTime.now(),
 	var content: String
-	
 )
