@@ -38,7 +38,6 @@ fun Main(vm: HomeActivityViewModel) {
 	
 	var isAddServerShown by remember { mutableStateOf(false) }
 	
-	
 	if (isAddServerShown) AddServerDialog(
 		dismiss = { isAddServerShown = false },
 		onSubmit = {

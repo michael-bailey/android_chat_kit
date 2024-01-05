@@ -21,7 +21,9 @@ class NavigationDrawPageScaffoldScope(
 		composable: @Composable (NavController, PaddingValues?) -> Unit,
 	): PageData(route = route, composable = composable, title = title)
 	
-	
+	class HeaderData(
+		title: String
+	)
 	
 	fun drawerPage(
 		route: String,
@@ -43,5 +45,9 @@ class NavigationDrawPageScaffoldScope(
 				composable = composable
 			)
 		)
+	}
+	
+	fun header() {
+	
 	}
 }

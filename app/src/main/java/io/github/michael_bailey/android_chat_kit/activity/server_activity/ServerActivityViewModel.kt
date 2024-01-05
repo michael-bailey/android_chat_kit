@@ -18,6 +18,7 @@ import io.github.michael_bailey.android_chat_kit.repository.UserListRepository
 import io.github.michael_bailey.android_chat_kit.utils.ClientDetails
 import io.github.michael_bailey.android_chat_kit.utils.EventSocket
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.map
 import org.british_information_technologies.chatkit_server_kotlin.lib.messages.ClientMessageInput
 import org.british_information_technologies.chatkit_server_kotlin.lib.messages.ClientMessageOutput
 import javax.inject.Inject
@@ -43,7 +44,10 @@ class ServerActivityViewModel @Inject constructor(
 	override val serverHostname: LiveData<String> = serverInfoViewModel
 		.hostname.asLiveData()
 	
-	override val users: LiveData<List<ClientDetails>> = userListRepository.userList.asLiveData()
+	override val users: LiveData<List<ClientDetails>> = userListRepository.userList.map {
+		val uuid = loginRepository.getUUID()
+		it.filter { it.uuid != uuid }
+	}.asLiveData()
 	override val groupedMessage: LiveData<List<List<GlobalChatMessage>>> = messageRepository.globalMessages.asLiveData()
 	
 	// MARK: - UI Handlers

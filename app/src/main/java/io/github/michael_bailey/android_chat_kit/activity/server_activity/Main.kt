@@ -26,6 +26,9 @@ fun Main(vm: IConnectedServerViewModel) {
 	val serverName by vm.serverName.observeAsState("")
 	val serverOwner by vm.serverOwner.observeAsState("")
 	
+	val users by vm.users.observeAsState(listOf())
+	
+	
 	NavigationDrawPageScaffold(
 		startRoute = "global_chat",
 		drawerHeader = {
@@ -39,6 +42,7 @@ fun Main(vm: IConnectedServerViewModel) {
 			route = "global_chat",
 			icon = Icons.Outlined.Person,
 			label = "Global Chat",
+			title = "Global Chat",
 			bottomBar = BottomBarData {
 				MessageSenderBar(vm)
 			}
@@ -48,15 +52,16 @@ fun Main(vm: IConnectedServerViewModel) {
 			}
 		}
 		
-		drawerPage(
-			route = "users",
-			icon = Icons.Outlined.Person,
-			label = "Users",
-			title = "Connected Users",
-		) { nav, pad ->
-			Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-				ConnectedUserList(vm = vm)
-
+		for (i in users) {
+			drawerPage(
+				route = i.uuid.toString(),
+				icon = Icons.Outlined.Person,
+				label = i.username,
+				title = i.username,
+			) { nav, pad ->
+				Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+					ConnectedUserList(vm = vm)
+				}
 			}
 		}
 	}
