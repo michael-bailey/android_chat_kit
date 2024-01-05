@@ -9,7 +9,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.github.michael_bailey.android_chat_kit.database.dao.EntContactDao
 import io.github.michael_bailey.android_chat_kit.database.dao.EntMessageDao
-import io.github.michael_bailey.android_chat_kit.database.dao.EntProfileDao
 import io.github.michael_bailey.android_chat_kit.database.dao.EntServerDao
 import javax.inject.Singleton
 
@@ -23,12 +22,7 @@ class AppDatabaseProvider {
 			context,
 			AppDatabase::class.java,
 			"gym_log_book_db"
-		).fallbackToDestructiveMigration().build()
-	
-	@Provides
-	fun provideProfileDao(appDatabase: AppDatabase): EntProfileDao {
-		return appDatabase.profileDao()
-	}
+		).build()
 	
 	@Provides
 	fun provideServerDao(appDatabase: AppDatabase): EntServerDao {

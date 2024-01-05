@@ -47,11 +47,7 @@ class App(
 			.getSystemService(BIOMETRIC_SERVICE) as BiometricManager
 
 		appDebugPreferencesManager = DebugPreferencesManager(this)
-//
-//		val serviceintent = Intent(this, ServerConnectionService::class.java)
-//
-//		startService(serviceintent)
-
+		
 	}
 
 	override fun onTerminate() {

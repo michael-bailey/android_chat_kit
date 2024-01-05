@@ -1,8 +1,12 @@
 package io.github.michael_bailey.android_chat_kit.repository
 
-import kotlinx.coroutines.flow.MutableStateFlow
+import android.content.SharedPreferences
+import io.github.michael_bailey.android_chat_kit.preferences.preference_types.StringPreference
+import io.github.michael_bailey.android_chat_kit.preferences.preference_types.UUIDPreference
+import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Handles all login state for teh applicaiton
@@ -11,39 +15,43 @@ import javax.inject.Inject
  *
  * It is a global object.
  */
+@Singleton
 class LoginRepository @Inject constructor(
-	private val tokenRepository: TokenRepository,
-	private val profileRepository: ProfileRepository
-) {
+	pref: SharedPreferences
+): Repository() {
 	
-	private val _isLoggedInFlow: MutableStateFlow<Boolean> =
-		MutableStateFlow(tokenRepository.getToken() != null)
+	private val usernamePreference: StringPreference = StringPreference("username", pref)
+	private val idPreference: UUIDPreference = UUIDPreference("uuid", pref)
 	
-	/**
-	 * token pair of the logged in user
-	 */
-	private val token: Pair<UUID, String>? get() = tokenRepository.getToken()
+	val hasProfile: Boolean
+		get() = idPreference.fetch() != null && (
+			usernamePreference.fetch()?.isNotEmpty() == true
+		)
 	
-	/**
-	 * Tells if the user is logged in
-	 */
-	val isLoggedIn: Boolean get() = token != null
+	val uuid by idPreference
+	val username by usernamePreference
 	
-	
-	
-	/**
-	 * sets loginToken
-	 */
-	fun setLoginToken(token: Pair<UUID, String>) {
-		tokenRepository.saveToken(token)
-		
+	init {
+		scope.launch {
+			// don't regen after reloading.
+			if (idPreference.getValue() == null) {
+				idPreference.update(UUID.randomUUID())
+			}
+		}
 	}
 	
-	/**
-	 * Logs a profile out of the application
-	 */
-	fun logout() {
-		tokenRepository.clearToken()
+	suspend fun setUsername(username: String) {
+		usernamePreference.update(username)
 	}
-
+	
+	suspend fun regenUUID() {
+		idPreference.update(UUID.randomUUID())
+	}
+	
+	fun genUsername() {
+		usernamePreference._currentStateFlow.value
+	}
+	
+	fun getUUID(): UUID? = idPreference.getValue()
+	fun getUsername(): String = usernamePreference.getValue() ?: "Username"
 }

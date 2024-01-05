@@ -9,11 +9,13 @@ import java.util.Base64
 
 class PublicKeyConverter {
 	@TypeConverter
-	fun publicKeyToString(key: PublicKey): String = Base64.getEncoder().encode(key.encoded).toString()
+	fun publicKeyToString(key: PublicKey?): String? = key?.let {
+		Base64.getEncoder().encode(it.encoded).toString()
+	}
 	
 	@TypeConverter
-	fun stringToPublicKey(string: String): PublicKey =
+	fun stringToPublicKey(string: String?): PublicKey? = string?.let {
 		KeyFactory.getInstance("RSA")
-			.generatePublic(X509EncodedKeySpec(Base64.getDecoder().decode(string)))
-	
+			.generatePublic(X509EncodedKeySpec(Base64.getDecoder().decode(it)))
+	}
 }

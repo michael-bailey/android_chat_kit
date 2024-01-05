@@ -19,6 +19,6 @@ interface EntMessageDao {
 	fun genMessageFromChatThread(uuid: UUID): Flow<List<EntMessage>>
 	
 	@Insert
-	suspend fun createMessage(message: EntMessage)
+	fun createMessage(message: EntMessage)
 	
 }

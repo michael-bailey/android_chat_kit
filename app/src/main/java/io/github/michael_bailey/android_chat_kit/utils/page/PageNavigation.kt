@@ -21,9 +21,11 @@ abstract class PageNavigation<VM: ViewModel>(
 	val route: String,
 	@StringRes val label: Int? = null,
 	val icon: ImageVector,
-	val pageFunction: @Composable ((VM) -> Unit),
-	val fab: FabConfig<VM>? = null,
 ) {
+	
+	abstract val pageFunction: @Composable (VM) -> Unit
+	open val fab: FabConfig<VM>? = null
+	
 	fun compose(it: NavGraphBuilder, vm: VM) {
 		it.composable(route) {
 			pageFunction(vm)
@@ -52,7 +54,7 @@ abstract class PageNavigation<VM: ViewModel>(
 	
 	@Composable
 	fun Icon() {
-		androidx.compose.material.Icon(
+		androidx.compose.material3.Icon(
 			imageVector = icon,
 			contentDescription = "A Home Button For The App"
 		)

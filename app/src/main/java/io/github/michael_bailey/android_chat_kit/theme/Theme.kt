@@ -38,12 +38,28 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun ChatKitAndroidTheme(
 	darkTheme: Boolean = isSystemInDarkTheme(),
+	// Dynamic color is available on Android 12+
 	dynamicColor: Boolean = true,
-	content: @Composable () -> Unit
+	colourNavBar: Boolean = false,
+	content: @Composable () -> Unit,
 ) {
 	val activity = LocalContext.current as Activity
 	val window = activity.window
-
+	
+	WindowCompat.setDecorFitsSystemWindows(window, false)
+	window.statusBarColor = Color.Transparent.toArgb()
+	window.navigationBarColor = Color.Transparent.toArgb()
+	
+	WindowCompat.getInsetsController(
+		window,
+		window.decorView
+	).isAppearanceLightStatusBars = !darkTheme
+	
+	WindowCompat.getInsetsController(
+		window,
+		window.decorView
+	).isAppearanceLightNavigationBars = !darkTheme
+	
 	val colorScheme = when {
 		dynamicColor -> {
 			val context = LocalContext.current
@@ -53,21 +69,10 @@ fun ChatKitAndroidTheme(
 				context
 			)
 		}
+		
 		darkTheme -> DarkColorScheme
 		else -> LightColorScheme
 	}
-	
-	WindowCompat.setDecorFitsSystemWindows(window, false)
-	window.statusBarColor = Color.Transparent.toArgb()
-	window.navigationBarColor = Color.Transparent.toArgb()
-	WindowCompat.getInsetsController(
-		window,
-		window.decorView
-	).isAppearanceLightStatusBars = !darkTheme
-	WindowCompat.getInsetsController(
-		window,
-		window.decorView
-	).isAppearanceLightNavigationBars = !darkTheme
 	
 	MaterialTheme(
 		colorScheme = colorScheme,

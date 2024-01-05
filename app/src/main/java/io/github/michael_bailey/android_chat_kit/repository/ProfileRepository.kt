@@ -1,12 +1,12 @@
 package io.github.michael_bailey.android_chat_kit.repository
 
-import io.github.michael_bailey.android_chat_kit.database.dao.EntProfileDao
-import java.util.UUID
+import android.content.SharedPreferences
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class ProfileRepository @Inject constructor(
-	private val profileDao: EntProfileDao,
-) {
-	suspend fun getProfileOverview(uuid: UUID): EntProfileDao.EntProfileOverview =
-		profileDao.queryProfileOverview(uuid)
+	private val preferences: SharedPreferences
+): Repository() {
+
 }

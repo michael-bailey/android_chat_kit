@@ -4,33 +4,23 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import io.github.michael_bailey.android_chat_kit.extension.any.log
 import io.github.michael_bailey.android_chat_kit.repository.ServerRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import javax.inject.Inject
 
-class ServerConnectionService(
+class ServerConnectionService @Inject constructor(
+	private var serverRepository: ServerRepository
 ) : Service() {
 	
 	private val job = SupervisorJob()
-	private val serviceScope = CoroutineScope(Dispatchers.Main + job)
+	private val serviceScope = CoroutineScope(Dispatchers.Default + job)
 	
-	private lateinit var serverRepository: ServerRepository
+	override fun onBind(intent: Intent?): IBinder = ServerConnectionBinder()
 	
-	override fun onCreate() {
-		super.onCreate()
-		
-		serverRepository = ServerRepository()
-	}
-	
-	override fun onBind(intent: Intent?): IBinder? = null
-
-
-
-	override fun onDestroy() {
-		super.onDestroy()
-		log("onDestroy")
+	override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+		return super.onStartCommand(intent, flags, startId)
 	}
 	
 	class ServerConnectionBinder(

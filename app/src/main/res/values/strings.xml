@@ -15,4 +15,7 @@
 	</string>
     <string name="title_activity_thread">ThreadActivity</string>
     <string name="title_activity_connected_server">ConnectedServerActivity</string>
+    <string name="add_server_fab">Add Server</string>
+    <string name="title_activity_onboarding">OnboardingActivity</string>
+    <string name="title_activity_server">ServerActivity</string>
 </resources>
