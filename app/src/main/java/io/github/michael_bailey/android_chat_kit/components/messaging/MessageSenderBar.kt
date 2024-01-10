@@ -15,10 +15,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.michael_bailey.android_chat_kit.interfaces.IMessageSendBarController
 
 @Composable
-fun RowScope.MessageSenderBar(vm: IMessageSendBarController) {
+fun RowScope.MessageSenderBar(onSend: (String) -> Boolean) {
 	
 	var textState by remember { mutableStateOf("") }
 	
@@ -30,7 +29,7 @@ fun RowScope.MessageSenderBar(vm: IMessageSendBarController) {
 	FloatingActionButton(
 		onClick = {
 			if (textState.isNotEmpty()) {
-				vm.sendGlobalMessage(textState)
+				onSend(textState)
 				textState = ""
 			}
 		}

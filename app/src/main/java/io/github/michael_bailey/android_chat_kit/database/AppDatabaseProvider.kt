@@ -8,8 +8,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.github.michael_bailey.android_chat_kit.database.dao.EntContactDao
-import io.github.michael_bailey.android_chat_kit.database.dao.EntMessageDao
 import io.github.michael_bailey.android_chat_kit.database.dao.EntServerDao
+import io.github.michael_bailey.android_chat_kit.database.dao.EntUserMessageDao
 import javax.inject.Singleton
 
 @Module
@@ -21,8 +21,8 @@ class AppDatabaseProvider {
 	fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase = Room.databaseBuilder(
 			context,
 			AppDatabase::class.java,
-			"gym_log_book_db"
-		).build()
+			"chat-kit-db"
+		).fallbackToDestructiveMigration().build()
 	
 	@Provides
 	fun provideServerDao(appDatabase: AppDatabase): EntServerDao {
@@ -35,7 +35,7 @@ class AppDatabaseProvider {
 	}
 	
 	@Provides
-	fun provideMessageDao(appDatabase: AppDatabase): EntMessageDao {
+	fun provideMessageDao(appDatabase: AppDatabase): EntUserMessageDao {
 		return appDatabase.messageDao()
 	}
 }

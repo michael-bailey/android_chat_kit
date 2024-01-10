@@ -4,16 +4,15 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
-import java.time.LocalDateTime
 import java.util.UUID
 
 @Entity(
-	tableName = "message",
+	tableName = "contact",
 	indices = []
 )
 @Parcelize
-data class EntMessage(
-	@PrimaryKey var uuid: UUID = UUID.randomUUID(),
-	var createdTime: LocalDateTime = LocalDateTime.now(),
-	var content: String
+data class EntUser(
+	@PrimaryKey var uuid: UUID,
+	var username: String,
+	var nickname: String = "",
 ): Parcelable

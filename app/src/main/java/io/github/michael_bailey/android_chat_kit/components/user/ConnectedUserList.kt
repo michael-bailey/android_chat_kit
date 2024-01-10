@@ -8,10 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import io.github.michael_bailey.android_chat_kit.interfaces.view_model.IConnectedUserViewModel
+import io.github.michael_bailey.android_chat_kit.activity.server_activity.ServerActivityViewModel
 
 @Composable
-fun ConnectedUserList(vm: IConnectedUserViewModel) {
+fun ConnectedUserList(vm: ServerActivityViewModel) {
 	
 	val users by vm.users.observeAsState(listOf())
 	
@@ -20,7 +20,7 @@ fun ConnectedUserList(vm: IConnectedUserViewModel) {
 		.fillMaxHeight()) {
 		
 		for (i in users) {
-			item { Text(text = "User: ${i.username}") }
+			item { Text(text = "User: ${i.name}") }
 		}
 	}
 }

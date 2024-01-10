@@ -1,5 +1,6 @@
 package io.github.michael_bailey.android_chat_kit.repository
 
+import io.github.michael_bailey.android_chat_kit.data_type.ServerData
 import io.github.michael_bailey.android_chat_kit.data_type.ServerInfoData
 import io.github.michael_bailey.android_chat_kit.database.dao.EntServerDao
 import io.github.michael_bailey.android_chat_kit.database.embed.ServerInfo
@@ -59,4 +60,15 @@ open class ServerRepository @Inject constructor(
 	suspend fun refetch(hostname: String) {
 		serverInfoRepository.refetch(hostname)
 	}
+	
+	suspend fun findServer(hostname: String): ServerData? = serverDao.getServer(hostname)?.let {
+		ServerData(
+			uuid = it.uuid,
+			hostname = it.host,
+			port = it.port,
+			name = it.serverInfo?.name ?: "unknown",
+			owner = it.serverInfo?.owner ?: "unknown"
+		)
+	}
+
 }

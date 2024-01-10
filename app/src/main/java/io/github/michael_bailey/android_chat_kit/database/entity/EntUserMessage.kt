@@ -21,19 +21,21 @@ import java.util.UUID
  * @since
  */
 @Entity(
-	tableName = "global_chat_message",
+	tableName = "user_message",
 	indices = []
 )
 @Parcelize
-data class EntGlobalChatMessage(
+data class EntUserMessage(
 	@PrimaryKey var uuid: UUID = UUID.randomUUID(),
 	var createdTime: LocalDateTime = LocalDateTime.now(),
 	
-	var fromServer: UUID,
 	var from: UUID,
+	var to: UUID,
 	
 	var threadId: UUID? = null,
 	var sendTime: LocalDateTime? = null,
 	
 	var content: String
-): Parcelable
+): Parcelable {
+
+}

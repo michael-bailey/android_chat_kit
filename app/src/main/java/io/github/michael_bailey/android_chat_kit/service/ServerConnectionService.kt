@@ -10,9 +10,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import javax.inject.Inject
 
-class ServerConnectionService @Inject constructor(
-	private var serverRepository: ServerRepository
+class ServerConnectionService(
 ) : Service() {
+	
+	@Inject lateinit var serverRepository: ServerRepository
 	
 	private val job = SupervisorJob()
 	private val serviceScope = CoroutineScope(Dispatchers.Default + job)

@@ -14,11 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import io.github.michael_bailey.android_chat_kit.data_type.GlobalChatMessage
 
 @Composable
 fun ChatMessageView(
-	chatMessage: GlobalChatMessage,
+	displayText: String,
+	isReceived: Boolean,
 	isFirst: Boolean = false,
 	isLast: Boolean = false
 ) {
@@ -26,16 +26,15 @@ fun ChatMessageView(
 	val context = LocalContext.current
 	
 	// text formatting
-	val displayText = chatMessage.content
 	
 	var shape = RoundedCornerShape(24.dp)
 	val corSize = CornerSize(8.dp)
 	
-	val a = listOf(chatMessage.isReceived, isFirst, isLast)
+	val a = listOf(isReceived, isFirst, isLast)
 	
 	
 	// these statements are reversed cause of layouts
-	if (chatMessage.isReceived) {
+	if (isReceived) {
 		if (isFirst && !isLast) {
 			shape = shape.copy(
 				bottomStart = corSize
@@ -52,7 +51,7 @@ fun ChatMessageView(
 		}
 	}
 	
-	if (!chatMessage.isReceived) {
+	if (!isReceived) {
 		if (isFirst && !isLast) {
 			shape = shape.copy(
 				bottomEnd = corSize
@@ -71,12 +70,12 @@ fun ChatMessageView(
 	
 	Row(
 		modifier = Modifier.fillMaxWidth(),
-		horizontalArrangement = if (chatMessage.isReceived) { Arrangement.Start } else { Arrangement.End },
+		horizontalArrangement = if (isReceived) { Arrangement.Start } else { Arrangement.End },
 	) {
 		Card(
 			modifier = Modifier.padding(1.dp),
 			shape = shape,
-			colors = if (chatMessage.isReceived) { CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer) } else { CardDefaults.cardColors() },
+			colors = if (isReceived) { CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer) } else { CardDefaults.cardColors() },
 		) {
 			Text(
 				modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp),

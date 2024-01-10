@@ -39,7 +39,7 @@ class ServerInfoRepository @Inject constructor(
 				hostname = it.host,
 				port = it.port,
 				name = it.serverInfo?.name ?: "null",
-				owner = it.serverInfo?.owner ?: "null"
+				owner = it.serverInfo?.owner ?: "null",
 			)
 		}
 	}
@@ -52,12 +52,28 @@ class ServerInfoRepository @Inject constructor(
 		map.map { (k,v) -> k to v.serverInfo }.toMap()
 	}
 	
+	suspend fun getInfo(hostname: String, port: Int = 5600): ServerInfoData? {
+		val server = serverDao.getServer(hostname)
+		
+		if (server != null) {
+			return ServerInfoData(
+				hostname = server.host,
+				port = port,
+				name = server.serverInfo?.name!!,
+				owner = server.serverInfo?.owner!!,
+			)
+		} else {
+			return fetchInfo(hostname, port)
+		}
+	}
+	
 	/**
 	 * fetches server information.
 	 *
 	 * TODO: add exception handling to this function.
 	 */
 	suspend fun fetchInfo(hostname: String, port: Int = 5600): ServerInfoData? {
+		
 		val socket = Socket(hostname, port)
 		
 		val input = socket.getInputStream().bufferedReader()
@@ -80,9 +96,9 @@ class ServerInfoRepository @Inject constructor(
 		if (infoMsg is NetworkMessageOutput.GotInfo) {
 			return ServerInfoData(
 				hostname = infoMsg.hostname,
+				port = port,
 				name = infoMsg.server_name,
 				owner = infoMsg.server_owner,
-				port = port
 			)
 		}
 		

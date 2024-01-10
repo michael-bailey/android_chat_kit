@@ -6,4 +6,7 @@ import org.british_information_technologies.chatkit_server_kotlin.lib.messages.C
 import java.io.BufferedReader
 
 suspend fun BufferedReader.genReadClientMsg(
-): ClientMessageOutput = Json.decodeClientMsg(this.genReadline())
+): ClientMessageOutput {
+	val receivedString = this.genReadline()
+	return Json.decodeClientMsg(receivedString)
+}

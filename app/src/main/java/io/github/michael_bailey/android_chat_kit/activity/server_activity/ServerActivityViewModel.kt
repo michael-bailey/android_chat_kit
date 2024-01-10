@@ -6,71 +6,91 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.michael_bailey.android_chat_kit.data_type.GlobalChatMessage
+import io.github.michael_bailey.android_chat_kit.data_type.UserChatMessageData
 import io.github.michael_bailey.android_chat_kit.database.entity.EntGlobalChatMessage
 import io.github.michael_bailey.android_chat_kit.extension.any.log
 import io.github.michael_bailey.android_chat_kit.extension.view_model.launch
 import io.github.michael_bailey.android_chat_kit.interfaces.IEventSocketDelegate
 import io.github.michael_bailey.android_chat_kit.interfaces.view_model.IConnectedServerViewModel
-import io.github.michael_bailey.android_chat_kit.repository.LoginRepository
+import io.github.michael_bailey.android_chat_kit.interfaces.view_model.IConnectedUserViewModel
+import io.github.michael_bailey.android_chat_kit.interfaces.view_model.IServerChatListViewModel
 import io.github.michael_bailey.android_chat_kit.repository.MessageRepository
+import io.github.michael_bailey.android_chat_kit.repository.ServerSocketRepository
 import io.github.michael_bailey.android_chat_kit.repository.UserListRepository
-import io.github.michael_bailey.android_chat_kit.utils.ClientDetails
-import io.github.michael_bailey.android_chat_kit.utils.EventSocket
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.map
-import org.british_information_technologies.chatkit_server_kotlin.lib.messages.ClientMessageInput
 import org.british_information_technologies.chatkit_server_kotlin.lib.messages.ClientMessageOutput
+import java.util.UUID
 import javax.inject.Inject
 
+/**
+ * view state of the Server activity
+ * controls the lifecycle of connections to the server.
+ *
+ * @property _serverSocket [EventSocket?] The socket to the currently connected server
+ *
+ * @property serverName [Flow<String>] The name of the server.
+ * @property serverOwner [Flow<String>] The name of the server.
+ * @property serverHostname [Flow<String>] The name of the server.
+ *
+ * @property users [Flow<String>] A list of currently connected users.
+ * @property globalMessages [Flow<String>] A list of all messages on the server.
+ *
+ * @author michael-bailey
+ * @since 1.0
+ */
 @HiltViewModel
 class ServerActivityViewModel @Inject constructor(
 	private val serverInfoViewModel: ServerInfoViewModel,
-	private val loginRepository: LoginRepository,
+	private val serverChatViewModel: ServerChatViewModel,
+	private val serverUserViewModel: ServerUserViewModel,
 	private val userListRepository: UserListRepository,
 	private val messageRepository: MessageRepository,
-): ViewModel(), DefaultLifecycleObserver, IConnectedServerViewModel, IEventSocketDelegate {
+	private val serverSocketRepository: ServerSocketRepository,
+): ViewModel(),
+	IConnectedServerViewModel by serverInfoViewModel,
+	IServerChatListViewModel by serverChatViewModel,
+	IConnectedUserViewModel by serverUserViewModel,
+	DefaultLifecycleObserver,
+	IEventSocketDelegate
+{
 	
-	/// the socket that controls communication
-	// between the app and the server
-	private var _serverSocket: EventSocket? = null
+	val users = userListRepository.userList.asLiveData()
 	
-	override val serverName: LiveData<String> = serverInfoViewModel
-		.name.asLiveData()
-	
-	override val serverOwner: LiveData<String> = serverInfoViewModel
-		.owner.asLiveData()
-	
-	override val serverHostname: LiveData<String> = serverInfoViewModel
-		.hostname.asLiveData()
-	
-	override val users: LiveData<List<ClientDetails>> = userListRepository.userList.map {
-		val uuid = loginRepository.getUUID()
-		it.filter { it.uuid != uuid }
-	}.asLiveData()
-	override val groupedMessage: LiveData<List<List<GlobalChatMessage>>> = messageRepository.globalMessages.asLiveData()
-	
-	// MARK: - UI Handlers
-	override fun sendGlobalMessage(msg: String): Job = launch {
-		_serverSocket!!.send(ClientMessageInput.SendGlobalMessage(msg))
+	/**
+	 * Sends a text message to the global server channel.
+	 *
+	 * @param msg [String] The message to be sent.
+	 *
+	 * @return [Job] The coroutine jon that is ran.
+	 * @author michael-bailey
+	 */
+	fun sendGlobalMessage(msg: String): Job = launch {
+		serverChatViewModel.sendGlobalMessage(msg)
 	}
 	
-	// MARK: - Message handlers
+	fun sendUserMessage(uuid: UUID, message: String): Job = launch {
+		serverChatViewModel.sendUserMessage(uuid, message)
+		messageRepository.addSentUserMessage(
+			to = uuid,
+			content  = message
+		)
+	}
 	
-	override suspend fun onMessageReceived(msg: ClientMessageOutput) {
-		when(msg) {
-			is ClientMessageOutput.ConnectedClients -> { this.updateClientList(msg) }
-			is ClientMessageOutput.GlobalMessage -> { this.addGlobalMessage(msg) }
-			is ClientMessageOutput.GlobalChatMessages -> { this.updateGlobalMessages(msg) }
-			else -> {log("other message received")}
-		}
+	// MARK: - event functions
+	
+	private fun addUserMessage(msg: ClientMessageOutput.UserMessage) = launch {
+		messageRepository.addUserMessage(
+			from = msg.from,
+			content = msg.content
+		)
 	}
 	
 	private suspend fun addGlobalMessage(
 		msg: ClientMessageOutput.GlobalMessage
-	) {
-		messageRepository.addMessage(EntGlobalChatMessage(
-			sender = msg.from,
+	) = launch {
+		messageRepository.addGlobalMessage(EntGlobalChatMessage(
+			fromServer = serverId.value!!,
+			from = msg.from,
 			content = msg.content
 		))
 	}
@@ -79,7 +99,8 @@ class ServerActivityViewModel @Inject constructor(
 		messageRepository.update(
 			msg.messages.map {
 				EntGlobalChatMessage(
-					sender = it.from,
+					fromServer = serverId.value!!,
+					from = it.from,
 					content = it.content
 				)
 			}
@@ -94,7 +115,7 @@ class ServerActivityViewModel @Inject constructor(
 	
 	/// When the activity is created
 	/// Create the connection
-	override fun onCreate(owner: LifecycleOwner) {
+	override fun onStart(owner: LifecycleOwner) {
 		super.onCreate(owner)
 		
 		log("onCreate: getting activity")
@@ -110,37 +131,39 @@ class ServerActivityViewModel @Inject constructor(
 			return
 		}
 		
-		_serverSocket = EventSocket(this)
-		
 		launch {
-			
 			serverInfoViewModel.fetchInfo(hostname, port)
-			
-			_serverSocket!!.connect(
-				hostname,
-				port,
-				loginRepository.getUUID()!!,
-				loginRepository.getUsername()
+			serverSocketRepository.connect(
+				delegate = this@ServerActivityViewModel,
+				hostname = hostname,
+				port = port,
+				userID = userId.value!!,
+				username = username.value!!
 			)
-			
-			_serverSocket!!.send(ClientMessageInput.GetClients)
-			_serverSocket!!.send(ClientMessageInput.GetMessages)
+			serverSocketRepository.getClients()
+			serverSocketRepository.getMessages()
 		}
 	}
 	
-	override fun onStart(owner: LifecycleOwner) {
-		super.onStart(owner)
+	override suspend fun onMessageReceived(msg: ClientMessageOutput) {
+		when(msg) {
+			is ClientMessageOutput.ConnectedClients -> { this.updateClientList(msg) }
+			is ClientMessageOutput.GlobalMessage -> { this.addGlobalMessage(msg) }
+			is ClientMessageOutput.GlobalChatMessages -> { this.updateGlobalMessages(msg) }
+			is ClientMessageOutput.UserMessage -> {this.addUserMessage(msg)}
+			else -> {log("other message received")}
+		}
 	}
 	
 	override fun onStop(owner: LifecycleOwner) {
-		super.onStop(owner)
-	}
-	
-	override fun onDestroy(owner: LifecycleOwner) {
 		super.onDestroy(owner)
 		launch {
-			_serverSocket?.send(ClientMessageInput.Disconnect)
-			_serverSocket = null
+			serverSocketRepository.disconnect()
 		}
 	}
+	
+	fun getUserMessageStore(uuid: UUID): LiveData<List<UserChatMessageData>> {
+		return messageRepository.getUserMessageStore(uuid)
+	}
 }
+

@@ -17,9 +17,11 @@ class ServerActivity: Activity<ServerActivityViewModel>() {
 		
 		setContent {
 			ChatKitAndroidTheme {
-				Main(vm = vm)
+				Main()
 			}
 		}
 	}
+	
+	fun getViewModel(): ServerActivityViewModel = vm
 }
 
