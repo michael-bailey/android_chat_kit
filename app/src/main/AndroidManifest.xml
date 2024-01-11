@@ -41,11 +41,19 @@
             android:theme="@style/Theme.ChatKitAndroid" />
         <activity
             android:name=".activity.server_activity.ServerActivity"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/title_activity_server"
             android:theme="@style/Theme.ChatKitAndroid"
             android:allowEmbedded="true"
-            android:resizeableActivity="true" />
+            android:resizeableActivity="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="chat" />
+            </intent-filter>
+        </activity>
         <service
             android:name=".service.ServerConnectionService"
             android:enabled="true"

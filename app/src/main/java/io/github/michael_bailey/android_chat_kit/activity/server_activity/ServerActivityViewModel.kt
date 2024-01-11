@@ -121,9 +121,23 @@ class ServerActivityViewModel @Inject constructor(
 		log("onCreate: getting activity")
 		
 		owner as ServerActivity
+		val intent = owner.intent
 		
-		val hostname = owner.intent.extras?.getString("hostname")
-		val port = owner.intent.extras?.getInt("port") ?: 5600
+		val uri = intent.data
+		var hostname = intent.extras?.getString("hostname")
+		var port: Int = 5600
+		var userInfo: String? = null
+		
+		
+		if (hostname != null) {
+			intent.extras?.getInt("port")?.also { port = it }
+		} else {
+			hostname = uri?.host
+			uri?.port?.also { port = it }
+			userInfo = uri?.userInfo
+		}
+		
+		if (port == -1) port = 5600
 		
 		if (hostname == null) {
 			owner.finish()
@@ -132,6 +146,7 @@ class ServerActivityViewModel @Inject constructor(
 		}
 		
 		launch {
+			log("getting info for, $hostname:$port")
 			serverInfoViewModel.fetchInfo(hostname, port)
 			serverSocketRepository.connect(
 				delegate = this@ServerActivityViewModel,

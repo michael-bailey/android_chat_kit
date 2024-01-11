@@ -45,7 +45,6 @@ fun Main() {
 			Text(text = serverName)
 		}
 	) {
-		
 		drawerPage(
 			route = "global_chat",
 			icon = Icons.Outlined.Person,

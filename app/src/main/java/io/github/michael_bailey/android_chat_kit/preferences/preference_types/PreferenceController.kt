@@ -22,6 +22,7 @@ abstract class PreferenceController<T>(
 	}
 	
 	suspend fun update(value: T?) {
+		_currentStateFlow.emit(value)
 		setValue(sharedPreferences.edit(), value).apply()
 	}
 	
