@@ -53,8 +53,19 @@ class ServerActivityViewModel @Inject constructor(
 	DefaultLifecycleObserver,
 	IEventSocketDelegate
 {
-	
 	val users = userListRepository.userList.asLiveData()
+	
+	/**
+	 * Get an updating store of messages, for a particular user
+	 *
+	 * @param uuid: [UUID] the id of the users message list
+	 *
+	 * @author michael-bailey
+	 * @since 1.0
+	 */
+	fun getUserMessageStore(uuid: UUID): LiveData<List<UserChatMessageData>> {
+		return messageRepository.getUserMessageStore(uuid)
+	}
 	
 	/**
 	 * Sends a text message to the global server channel.
@@ -62,12 +73,25 @@ class ServerActivityViewModel @Inject constructor(
 	 * @param msg [String] The message to be sent.
 	 *
 	 * @return [Job] The coroutine jon that is ran.
+	 *
 	 * @author michael-bailey
+	 * @since 1.0
 	 */
 	fun sendGlobalMessage(msg: String): Job = launch {
 		serverChatViewModel.sendGlobalMessage(msg)
 	}
 	
+	/**
+	 * Sends a message to a specific user.
+	 *
+	 * @param uuid [UUID] The uuid of the user.
+	 * @param message [String] The message content.
+	 *
+	 * @return [Job] The coroutine jon that is ran.
+	 *
+	 * @author michael-bailey
+	 * @since 1.0
+	 */
 	fun sendUserMessage(uuid: UUID, message: String): Job = launch {
 		serverChatViewModel.sendUserMessage(uuid, message)
 		messageRepository.addSentUserMessage(
@@ -75,8 +99,6 @@ class ServerActivityViewModel @Inject constructor(
 			content  = message
 		)
 	}
-	
-	// MARK: - event functions
 	
 	private fun addUserMessage(msg: ClientMessageOutput.UserMessage) = launch {
 		messageRepository.addUserMessage(
@@ -113,8 +135,6 @@ class ServerActivityViewModel @Inject constructor(
 	
 	// MARK: - Activity lifecycle events
 	
-	/// When the activity is created
-	/// Create the connection
 	override fun onStart(owner: LifecycleOwner) {
 		super.onCreate(owner)
 		
@@ -175,10 +195,6 @@ class ServerActivityViewModel @Inject constructor(
 		launch {
 			serverSocketRepository.disconnect()
 		}
-	}
-	
-	fun getUserMessageStore(uuid: UUID): LiveData<List<UserChatMessageData>> {
-		return messageRepository.getUserMessageStore(uuid)
 	}
 }
 
