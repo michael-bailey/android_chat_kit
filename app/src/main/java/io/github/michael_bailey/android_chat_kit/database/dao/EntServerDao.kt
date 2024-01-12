@@ -36,6 +36,15 @@ abstract class EntServerDao {
 	@Query(
 		"""
 			SELECT * FROM server
+			WHERE :uuid == server.uuid
+			LIMIT 1
+		"""
+	)
+	abstract suspend fun getServer(uuid: UUID): EntServer?
+	
+	@Query(
+		"""
+			SELECT * FROM server
 			WHERE :id = server.uuid
 			LIMIT 1
 		"""

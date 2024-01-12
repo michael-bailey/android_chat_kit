@@ -70,5 +70,15 @@ open class ServerRepository @Inject constructor(
 			owner = it.serverInfo?.owner ?: "unknown"
 		)
 	}
+	
+	suspend fun findServer(uuid: UUID): ServerData? = serverDao.getServer(uuid)?.let {
+		ServerData(
+			uuid = it.uuid,
+			hostname = it.host,
+			port = it.port,
+			name = it.serverInfo?.name ?: "unknown",
+			owner = it.serverInfo?.owner ?: "unknown"
+		)
+	}
 
 }
