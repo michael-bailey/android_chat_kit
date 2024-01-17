@@ -14,12 +14,12 @@
 
     <application
         android:name=".App"
+        android:label="@string/app_name"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ChatKitAndroid">
@@ -41,19 +41,26 @@
             android:theme="@style/Theme.ChatKitAndroid" />
         <activity
             android:name=".activity.server_activity.ServerActivity"
+            android:allowEmbedded="true"
             android:exported="true"
             android:label="@string/title_activity_server"
-            android:theme="@style/Theme.ChatKitAndroid"
-            android:allowEmbedded="true"
-            android:resizeableActivity="true">
+            android:resizeableActivity="true"
+            android:theme="@style/Theme.ChatKitAndroid">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="chat" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activity.server_share_activity.ServerShareActivity"
+            android:exported="false"
+            android:label="@string/title_activity_server_share"
+            android:theme="@style/Theme.ChatKitAndroid" />
+
         <service
             android:name=".service.ServerConnectionService"
             android:enabled="true"

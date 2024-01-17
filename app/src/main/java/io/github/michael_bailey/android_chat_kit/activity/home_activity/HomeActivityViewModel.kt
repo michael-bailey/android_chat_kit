@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.michael_bailey.android_chat_kit.data_type.ServerInfoData
+import io.github.michael_bailey.android_chat_kit.data_type.ServerData
 import io.github.michael_bailey.android_chat_kit.extension.any.log
 import io.github.michael_bailey.android_chat_kit.extension.view_model.launch
 import io.github.michael_bailey.android_chat_kit.interfaces.view_model.IProfileViewModel
@@ -24,7 +24,7 @@ class HomeActivityViewModel @Inject constructor(
 	
 	override val uuid: LiveData<String> = loginRepository.uuid.map { it.toString() }.asLiveData()
 	override val username: LiveData<String> = loginRepository.username.map { it ?: "" }.asLiveData()
-	override val savedServers: LiveData<List<ServerInfoData>> = serverRepository.serverInfo.onEach {
+	override val savedServers: LiveData<List<ServerData>> = serverRepository.serverInfo.onEach {
 		log(it.toString())
 	}.asLiveData()
 	

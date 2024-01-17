@@ -129,4 +129,7 @@ dependencies {
     // bcrypt deps
     implementation 'org.mindrot:jbcrypt:0.4'
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.9.21"
+
+    // QRCode deps
+    implementation "com.google.zxing:core:3.5.2"
 }

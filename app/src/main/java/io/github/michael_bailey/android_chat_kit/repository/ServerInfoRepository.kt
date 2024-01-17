@@ -1,6 +1,6 @@
 package io.github.michael_bailey.android_chat_kit.repository
 
-import io.github.michael_bailey.android_chat_kit.data_type.ServerInfoData
+import io.github.michael_bailey.android_chat_kit.data_type.ServerData
 import io.github.michael_bailey.android_chat_kit.database.dao.EntServerDao
 import io.github.michael_bailey.android_chat_kit.database.embed.ServerInfo
 import io.github.michael_bailey.android_chat_kit.extension.buffered_reader.genReadline
@@ -35,11 +35,12 @@ class ServerInfoRepository @Inject constructor(
 	
 	val serverInfoList = serverDao.genServers().map { list ->
 		list.map {
-			ServerInfoData(
+			ServerData(
+				uuid = it.uuid,
 				hostname = it.host,
 				port = it.port,
 				name = it.serverInfo?.name ?: "null",
-				owner = it.serverInfo?.owner ?: "null",
+				owner = it.serverInfo?.owner ?: "null"
 			)
 		}
 	}
@@ -52,17 +53,19 @@ class ServerInfoRepository @Inject constructor(
 		map.map { (k,v) -> k to v.serverInfo }.toMap()
 	}
 	
-	suspend fun getInfo(hostname: String, port: Int = 5600): ServerInfoData? {
+	suspend fun getInfo(hostname: String, port: Int = 5600): ServerData? {
 		val server = serverDao.getServer(hostname)
 		
 		if (server != null) {
-			return ServerInfoData(
+			return ServerData(
+				uuid = server.uuid,
 				hostname = server.host,
-				port = port,
-				name = server.serverInfo?.name!!,
-				owner = server.serverInfo?.owner!!,
+				port = server.port,
+				name = server.serverInfo?.name ?: "null",
+				owner = server.serverInfo?.owner ?: "null"
 			)
 		} else {
+
 			return fetchInfo(hostname, port)
 		}
 	}
@@ -72,7 +75,7 @@ class ServerInfoRepository @Inject constructor(
 	 *
 	 * TODO: add exception handling to this function.
 	 */
-	suspend fun fetchInfo(hostname: String, port: Int = 5600): ServerInfoData? {
+	suspend fun fetchInfo(hostname: String, port: Int = 5600): ServerData? {
 		
 		val socket = Socket(hostname, port)
 		
@@ -94,7 +97,7 @@ class ServerInfoRepository @Inject constructor(
 		val infoMsg = Json.decodeFromString<NetworkMessageOutput>(infoString)
 		
 		if (infoMsg is NetworkMessageOutput.GotInfo) {
-			return ServerInfoData(
+			return ServerData(
 				hostname = infoMsg.hostname,
 				port = port,
 				name = infoMsg.server_name,

@@ -1,7 +1,6 @@
 package io.github.michael_bailey.android_chat_kit.repository
 
 import io.github.michael_bailey.android_chat_kit.data_type.ServerData
-import io.github.michael_bailey.android_chat_kit.data_type.ServerInfoData
 import io.github.michael_bailey.android_chat_kit.database.dao.EntServerDao
 import io.github.michael_bailey.android_chat_kit.database.embed.ServerInfo
 import io.github.michael_bailey.android_chat_kit.database.entity.EntServer
@@ -26,7 +25,7 @@ open class ServerRepository @Inject constructor(
 ) {
 	
 	/// list of all saved servers
-	val serverInfo: Flow<List<ServerInfoData>> = serverInfoRepository.serverInfoList
+	val serverInfo: Flow<List<ServerData>> = serverInfoRepository.serverInfoList
 	
 	suspend fun addServer(
 		hostname: String,
