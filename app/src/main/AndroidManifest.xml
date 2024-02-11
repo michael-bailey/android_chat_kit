@@ -45,7 +45,8 @@
             android:exported="true"
             android:label="@string/title_activity_server"
             android:resizeableActivity="true"
-            android:theme="@style/Theme.ChatKitAndroid">
+            android:theme="@style/Theme.ChatKitAndroid"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 

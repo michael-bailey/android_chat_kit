@@ -5,8 +5,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@android:color/system_accent2_0</item>
         <item name="android:windowLightStatusBar">false</item>
-        <item name="android:navigationBarColor">@android:color/system_accent2_0
-        </item>
+        <item name="android:navigationBarColor">@android:color/system_accent2_0</item>
 
     </style>
 
