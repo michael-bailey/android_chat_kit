@@ -1,7 +1,6 @@
 package io.github.michael_bailey.android_chat_kit.theme
 
 import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -9,17 +8,10 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.ViewCompat
-import com.google.android.material.elevation.SurfaceColors
-import io.github.michael_bailey.android_chat_kit.App
+import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
 	primary = Purple80,
@@ -49,14 +41,27 @@ fun ChatKitAndroidTheme(
 	// Dynamic color is available on Android 12+
 	dynamicColor: Boolean = true,
 	colourNavBar: Boolean = false,
-	content: @Composable () -> Unit
+	content: @Composable () -> Unit,
 ) {
-	val app = LocalContext.current.applicationContext
-	val view = LocalView.current
-	val context = LocalContext.current
-
+	val activity = LocalContext.current as Activity
+	val window = activity.window
+	
+	WindowCompat.setDecorFitsSystemWindows(window, false)
+	window.statusBarColor = Color.Transparent.toArgb()
+	window.navigationBarColor = Color.Transparent.toArgb()
+	
+	WindowCompat.getInsetsController(
+		window,
+		window.decorView
+	).isAppearanceLightStatusBars = !darkTheme
+	
+	WindowCompat.getInsetsController(
+		window,
+		window.decorView
+	).isAppearanceLightNavigationBars = !darkTheme
+	
 	val colorScheme = when {
-		dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+		dynamicColor -> {
 			val context = LocalContext.current
 			if (darkTheme) dynamicDarkColorScheme(
 				context
@@ -64,44 +69,11 @@ fun ChatKitAndroidTheme(
 				context
 			)
 		}
-
+		
 		darkTheme -> DarkColorScheme
 		else -> LightColorScheme
 	}
-
-	if (app is App) {
-		val debugStatusBarEnabled by app.appDebugPreferencesManager
-			.isDebugStatusBarColourEnabled.observeAsState(false)
-
-		val debugNavBarEnabled by app.appDebugPreferencesManager
-			.isDebugNavBarColourEnabled.observeAsState(false)
-
-		LaunchedEffect(debugNavBarEnabled, debugStatusBarEnabled) {
-			(view.context as Activity).window.statusBarColor =
-				if (debugStatusBarEnabled) {
-					Color.Red.toArgb()
-				} else {
-					colorScheme.background.toArgb()
-				}
-
-			(view.context as Activity).window.navigationBarColor =
-				if (debugNavBarEnabled) {
-					Color.Red.toArgb()
-				} else if (colourNavBar) {
-					SurfaceColors.SURFACE_2.getColor(view.context)
-				} else {
-					colorScheme.surface.toArgb()
-				}
-		}
-	}
-
-	if (!view.isInEditMode) {
-		SideEffect {
-			ViewCompat.getWindowInsetsController(view)?.isAppearanceLightStatusBars =
-				!darkTheme
-		}
-	}
-
+	
 	MaterialTheme(
 		colorScheme = colorScheme,
 		typography = Typography,

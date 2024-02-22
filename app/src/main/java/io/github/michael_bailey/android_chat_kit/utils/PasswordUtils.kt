@@ -48,16 +48,23 @@ object PasswordUtils {
 	): Result<String> = runCatching {
 		hashpw(password, salt)
 	}
-
+	
 	/**
 	 * compares plain text password to hashed password
 	 */
 	fun checkPassword(
-		password: String,
+		password: Password,
 		hashedPassword: String,
 	): Boolean {
-		val isPasswordCorrect = checkpw(password, hashedPassword)
-		return isPasswordCorrect
+		return checkpw(password.getString(), hashedPassword)
+	}
+	
+	/**
+	 * Get the exception that would be thrown if login was attempted and failed
+	 */
+	fun getPasswordErrors(password: String): PasswordUtilException? {
+		val result = validatePassword(password)
+		return if (result.isSuccess) return null else result.exceptionOrNull() as PasswordUtilException
 	}
 
 }

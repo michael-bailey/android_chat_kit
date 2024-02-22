@@ -1,18 +1,24 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.dagger.hilt.android'
+    id 'kotlin-kapt'
+    id 'kotlin-parcelize'
+    id 'org.jetbrains.kotlin.plugin.serialization'
 }
 
-apply plugin: 'kotlin-kapt'
+kapt {
+    correctErrorTypes true
+}
 
 android {
     namespace 'io.github.michael_bailey.android_chat_kit'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "io.github.michael_bailey.android_chat_kit"
         minSdk 33
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -20,76 +26,105 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            kotlinOptions {
+                freeCompilerArgs = ["-Xdebug"]
+            }
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
     buildFeatures {
         viewBinding true
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.2.0'
+        kotlinCompilerExtensionVersion = "1.5.5"
     }
     packagingOptions {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+
 }
 
 
 dependencies {
-    implementation platform('androidx.compose:compose-bom:2022.10.00')
-    implementation 'androidx.compose.ui:ui-graphics'
-    implementation platform('androidx.compose:compose-bom:2022.10.00')
-    implementation platform('androidx.compose:compose-bom:2022.10.00')
-    androidTestImplementation platform('androidx.compose:compose-bom:2022.10.00')
-    androidTestImplementation platform('androidx.compose:compose-bom:2022.10.00')
+    // android deps
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation "androidx.activity:activity-ktx:1.9.0-alpha01"
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx"
 
-    implementation 'androidx.compose.material:material:1.1.1'
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.5.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
-    implementation 'androidx.activity:activity-compose:1.3.1'
-    implementation "androidx.compose.ui:ui:$compose_version"
-    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation 'androidx.compose.material3:material3:1.0.0-alpha11'
-    implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
+    // material ui deps
+    implementation 'com.google.android.material:material:1.10.0'
+
+    // compose deps
+    implementation platform('androidx.compose:compose-bom:2023.10.01')
+    implementation "androidx.compose.ui:ui"
+    implementation "androidx.compose.ui:ui-tooling-preview"
+    implementation 'androidx.compose.material3:material3'
+    implementation "androidx.compose.runtime:runtime-livedata"
+
+    implementation 'androidx.activity:activity-compose'
+    implementation 'androidx.compose.material:material'
+    implementation 'androidx.compose.ui:ui-graphics'
+    implementation "androidx.compose.material:material-icons-extended"
+
+    // compose navigation
+    implementation "androidx.navigation:navigation-compose:$nav_version"
 
     // room database deps
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
+    implementation "androidx.navigation:navigation-runtime-ktx:$nav_version"
+    implementation platform('androidx.compose:compose-bom:2023.03.00')
+    androidTestImplementation platform('androidx.compose:compose-bom:2023.03.00')
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest'
     kapt "androidx.room:room-compiler:$room_version"
 
-    // gson
+    // gson deps
     implementation "com.google.code.gson:gson:$gson_version"
 
+    // work manager deps
+    implementation "androidx.work:work-runtime:$work_version"
 
-    androidTestImplementation platform('androidx.compose:compose-bom:2022.10.00')
-    implementation "androidx.navigation:navigation-compose:$nav_version"
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
-    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
-    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+    // hilt deps
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
 
-    // bcrypt
+    // security deps
+    implementation "androidx.security:security-crypto:$security_version"
+
+    // serialisation
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2'
+
+    // bcrypt deps
     implementation 'org.mindrot:jbcrypt:0.4'
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.9.21"
 }
