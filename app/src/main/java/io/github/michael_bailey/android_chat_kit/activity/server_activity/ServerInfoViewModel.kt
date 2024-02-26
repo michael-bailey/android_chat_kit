@@ -32,7 +32,7 @@ class ServerInfoViewModel @Inject constructor(
 		val infoData = serverInfoRepository.fetchInfo(hostname, port)
 		val server = serverRepository.findServer(hostname)
 		infoData?.also {
-			server?.let { it1 -> _serverId.emit(it1.uuid) }
+			server?.let { it1 -> _serverId.emit(it1.uuid!!) }
 			_serverHostname.emit(it.hostname)
 			_serverName.emit(it.name)
 			_serverOwner.emit(it.owner)

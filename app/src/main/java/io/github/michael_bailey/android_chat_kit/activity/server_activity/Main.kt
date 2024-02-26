@@ -45,18 +45,11 @@ fun Main() {
 			Text(text = serverName)
 		}
 	) {
-		
 		drawerPage(
 			route = "global_chat",
 			icon = Icons.Outlined.Person,
 			label = "Global Chat",
 			title = "Global Chat",
-			bottomBar = BottomBarData {
-				MessageSenderBar {
-					vm.sendGlobalMessage(it)
-					true
-				}
-			}
 		) { nav, pad ->
 			Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
 				val msgs by vm.globalMessages.observeAsState(initial = listOf())

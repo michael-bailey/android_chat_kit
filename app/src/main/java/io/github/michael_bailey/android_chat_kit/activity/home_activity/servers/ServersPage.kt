@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowForward
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.github.michael_bailey.android_chat_kit.activity.home_activity.HomeActivity
 import io.github.michael_bailey.android_chat_kit.extension.activity.startServerConnectionActivity
+import io.github.michael_bailey.android_chat_kit.extension.activity.startServerShareActivity
 import io.github.michael_bailey.android_chat_kit.interfaces.view_model.IServersViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -50,23 +52,36 @@ fun ServersPage(
 		LazyColumn(
 			modifier = Modifier
 				.fillMaxSize()
-			
 		) {
 			this.items(items = servers) {
 				Card(shape = RoundedCornerShape(20.dp)) {
-					Column(modifier = Modifier.padding(20.dp).fillMaxWidth()) {
+					Column(modifier = Modifier
+						.padding(20.dp)
+						.fillMaxWidth()) {
 						Text(it.name)
 						Text(it.owner)
 						Text("${it.hostname}: ${it.port}", color = Color.Gray)
-						Row(modifier =  Modifier.fillMaxWidth().padding(top = 16.dp), horizontalArrangement =Arrangement.End) {
-							Button(onClick = { context.refetchDetails(it.hostname) }) {
-								Icon(Icons.Outlined.Refresh, contentDescription = "")
-							}
-							Button(
-								modifier = Modifier.padding(horizontal = 12.dp),
-								onClick = { context.startServerConnectionActivity(it.hostname, it.port) }
+						Row(modifier = Modifier
+							.fillMaxWidth()
+							.padding(top = 16.dp), horizontalArrangement =Arrangement.End) {
+							Row(
 							) {
-								Icon(Icons.Outlined.ArrowForward, contentDescription = "")
+							 Button(onClick = { context.startServerShareActivity(it) }) {
+								 Icon(Icons.Outlined.Share, contentDescription = "")
+							 }
+							}
+							Row(
+								horizontalArrangement =Arrangement.End
+							) {
+								Button(onClick = { context.refetchDetails(it.hostname) }) {
+									Icon(Icons.Outlined.Refresh, contentDescription = "")
+								}
+								Button(
+									modifier = Modifier.padding(horizontal = 12.dp),
+									onClick = { context.startServerConnectionActivity(it.hostname, it.port) }
+								) {
+									Icon(Icons.Outlined.ArrowForward, contentDescription = "")
+								}
 							}
 						}
 					}

@@ -11,4 +11,5 @@
 	<color name="md_theme_light_surface">#FFFBFE</color>
 	<color name="md_theme_light_onSurface">#1C1B1F</color>
 	<color name="md_theme_light_surfaceVariant">#E7E0EC</color>
+	<color name="ic_launcher_background">#1664CE</color>
 </resources>

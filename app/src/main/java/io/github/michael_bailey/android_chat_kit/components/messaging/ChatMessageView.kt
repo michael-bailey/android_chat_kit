@@ -32,7 +32,6 @@ fun ChatMessageView(
 	
 	val a = listOf(isReceived, isFirst, isLast)
 	
-	
 	// these statements are reversed cause of layouts
 	if (isReceived) {
 		if (isFirst && !isLast) {

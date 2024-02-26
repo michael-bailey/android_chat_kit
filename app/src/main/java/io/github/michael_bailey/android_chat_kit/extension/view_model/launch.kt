@@ -8,3 +8,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 fun ViewModel.launch(block: suspend CoroutineScope.() -> Unit): Job = viewModelScope.launch(Dispatchers.IO, block = block)
+fun ViewModel.gen(block: suspend CoroutineScope.() -> Unit) {
+	viewModelScope.launch(Dispatchers.IO, block = block)
+}
