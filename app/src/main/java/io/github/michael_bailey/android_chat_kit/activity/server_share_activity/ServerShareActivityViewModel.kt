@@ -15,14 +15,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.michael_bailey.android_chat_kit.activity.Activity
 import io.github.michael_bailey.android_chat_kit.data_type.sharable.SharableServerInfoData
 import io.github.michael_bailey.android_chat_kit.extension.view_model.gen
-import io.github.michael_bailey.android_chat_kit.repository.ServerRepository
+import io.github.michael_bailey.android_chat_kit.repository.MutableServerRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 
 @HiltViewModel
 class ServerShareActivityViewModel @Inject constructor(
-	private val serverRepository: ServerRepository
+	private val savedServerRepository: MutableServerRepository
 ): ViewModel(), DefaultLifecycleObserver {
 	
 	val _serverName = MutableStateFlow("")

@@ -5,16 +5,26 @@ import java.util.UUID
 
 data class ServerData(
 	val uuid: UUID? = null,
+	
 	val hostname: String,
 	val port: Int = 5600,
 	val name: String,
 	val owner: String,
+	val status: ServerConnectionStatus = ServerConnectionStatus.Offline
 ) {
+	
+	companion object {
+		enum class ServerConnectionStatus {
+			Online,
+			Offline,
+			Unknown
+		}
+	}
+	
 	fun into(): SharableServerInfoData = SharableServerInfoData(
 		hostname = hostname,
 		port = port,
 		name = name,
 		owner = owner
 	)
-	
 }

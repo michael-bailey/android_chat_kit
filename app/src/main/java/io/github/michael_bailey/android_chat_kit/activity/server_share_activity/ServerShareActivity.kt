@@ -14,7 +14,7 @@ import io.github.michael_bailey.android_chat_kit.theme.ChatKitAndroidTheme
 @AndroidEntryPoint
 class ServerShareActivity : Activity<ServerShareActivityViewModel>() {
 	
-	override val vm by viewModels<ServerShareActivityViewModel>()
+	override val viewModel by viewModels<ServerShareActivityViewModel>()
 	
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)

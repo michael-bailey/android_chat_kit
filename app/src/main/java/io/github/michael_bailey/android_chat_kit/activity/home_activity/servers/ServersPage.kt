@@ -30,6 +30,7 @@ import androidx.navigation.NavController
 import io.github.michael_bailey.android_chat_kit.activity.home_activity.HomeActivity
 import io.github.michael_bailey.android_chat_kit.extension.activity.startServerConnectionActivity
 import io.github.michael_bailey.android_chat_kit.extension.activity.startServerShareActivity
+import io.github.michael_bailey.android_chat_kit.extension.any.log
 import io.github.michael_bailey.android_chat_kit.interfaces.view_model.IServersViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -73,7 +74,7 @@ fun ServersPage(
 							Row(
 								horizontalArrangement =Arrangement.End
 							) {
-								Button(onClick = { context.refetchDetails(it.hostname) }) {
+								Button(onClick = { log("Unimplemented") }) {
 									Icon(Icons.Outlined.Refresh, contentDescription = "")
 								}
 								Button(
@@ -85,6 +86,12 @@ fun ServersPage(
 							}
 						}
 					}
+				}
+			}
+			
+			item {
+				Button(onClick = { context.openDebugger() }) {
+					Text(text = "Open Debugger")
 				}
 			}
 		}

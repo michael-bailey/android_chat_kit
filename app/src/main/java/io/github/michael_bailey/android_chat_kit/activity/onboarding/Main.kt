@@ -8,6 +8,7 @@ import io.github.michael_bailey.android_chat_kit.components.navigation.PageScaff
 @Composable
 fun Main(vm: OnboardingActivityViewModel) {
 	
+	// remove this weird page scaffold stuff, making custom componnents is just easier
 	PageScaffold(startRoute = "welcome") {
 		page("username", composable = { nav, pad -> UserNamePage(vm, it, pad!!) })
 		page("welcome", composable = { nav, pad -> WelcomePage(vm, it, pad!!) })

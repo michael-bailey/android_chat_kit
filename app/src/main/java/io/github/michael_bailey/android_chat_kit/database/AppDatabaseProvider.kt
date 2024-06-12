@@ -25,16 +25,19 @@ class AppDatabaseProvider {
 		).fallbackToDestructiveMigration().build()
 	
 	@Provides
+	@Singleton
 	fun provideServerDao(appDatabase: AppDatabase): EntServerDao {
 		return appDatabase.serverDao()
 	}
 	
 	@Provides
+	@Singleton
 	fun provideContactDao(appDatabase: AppDatabase): EntContactDao {
 		return appDatabase.contactDao()
 	}
 	
 	@Provides
+	@Singleton
 	fun provideMessageDao(appDatabase: AppDatabase): EntUserMessageDao {
 		return appDatabase.messageDao()
 	}

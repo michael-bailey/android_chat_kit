@@ -16,17 +16,17 @@ abstract class Activity<VM>(
 ): ComponentActivity(
 ) where VM: ViewModel, VM: LifecycleObserver  {
 	
-	abstract val vm: VM
+	abstract val viewModel: VM
 	
 	/** adds the viewmodel to the activities observables */
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		lifecycle.addObserver(vm)
+		lifecycle.addObserver(viewModel)
 	}
 	
 	/** adds the viewmodel from the activities observables */
 	override fun onDestroy() {
 		super.onDestroy()
-		lifecycle.removeObserver(vm)
+		lifecycle.removeObserver(viewModel)
 	}
 }

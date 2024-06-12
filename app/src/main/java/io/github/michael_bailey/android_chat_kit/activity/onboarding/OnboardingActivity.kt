@@ -20,6 +20,11 @@ import io.github.michael_bailey.android_chat_kit.theme.ChatKitAndroidTheme
  * This includes setup of:
  * - UUID
  * - username
+ *
+ * todo:
+ * - Add better page navigation, so that un given permissions are re requested (E.G. notifications).
+ * - Add notification page, to request for notification permission. (Add explainer on how notifications work in android)
+ * - Replace preferences state with normal state that updates preferences.
  */
 @AndroidEntryPoint
 class OnboardingActivity : ComponentActivity() {

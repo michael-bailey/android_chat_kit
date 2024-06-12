@@ -33,7 +33,7 @@ fun GlobalChatListView(
 	messages: List<GlobalChatMessageData>
 ) {
 	
-	val vm = (LocalContext.current as Activity<ServerActivityViewModel>).vm
+	val vm = (LocalContext.current as Activity<ServerActivityViewModel>).viewModel
 	
 	val grouped = messages.runningGroupBy { it.senderId }
 	Column (

@@ -2,7 +2,6 @@ package io.github.michael_bailey.android_chat_kit.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
-import dagger.hilt.android.scopes.ViewModelScoped
 import io.github.michael_bailey.android_chat_kit.data_type.GlobalChatMessageData
 import io.github.michael_bailey.android_chat_kit.data_type.UserChatMessageData
 import io.github.michael_bailey.android_chat_kit.database.entity.EntGlobalChatMessage
@@ -15,8 +14,9 @@ import kotlinx.coroutines.flow.transform
 import java.time.LocalDateTime
 import java.util.UUID
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@ViewModelScoped
+@Singleton
 class MessageRepository @Inject constructor(
 	private val userListRepository: UserListRepository,
 	private val loginRepository: LoginRepository,
@@ -124,5 +124,9 @@ class MessageRepository @Inject constructor(
 	
 	suspend fun update(messages: List<EntGlobalChatMessage>) {
 		_globalMessages.emit(messages)
+	}
+	
+	suspend fun clear() {
+		_globalMessages.emit(listOf())
 	}
 }

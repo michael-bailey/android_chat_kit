@@ -1,5 +1,9 @@
 package io.github.michael_bailey.android_chat_kit.activity.server_activity
 
+import android.content.ComponentName
+import android.content.ServiceConnection
+import android.os.Build
+import android.os.IBinder
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
@@ -17,6 +21,7 @@ import io.github.michael_bailey.android_chat_kit.interfaces.view_model.IServerCh
 import io.github.michael_bailey.android_chat_kit.repository.MessageRepository
 import io.github.michael_bailey.android_chat_kit.repository.ServerSocketRepository
 import io.github.michael_bailey.android_chat_kit.repository.UserListRepository
+import io.github.michael_bailey.android_chat_kit.service.ServerConnectionServiceBinder
 import kotlinx.coroutines.Job
 import org.british_information_technologies.chatkit_server_kotlin.lib.messages.ClientMessageOutput
 import java.util.UUID
@@ -51,8 +56,12 @@ class ServerActivityViewModel @Inject constructor(
 	IServerChatListViewModel by serverChatViewModel,
 	IConnectedUserViewModel by serverUserViewModel,
 	DefaultLifecycleObserver,
-	IEventSocketDelegate
+	IEventSocketDelegate,
+	ServiceConnection
 {
+	
+	lateinit var binder: ServerConnectionServiceBinder
+	
 	val users = userListRepository.userList.asLiveData()
 	
 	/**
@@ -135,49 +144,38 @@ class ServerActivityViewModel @Inject constructor(
 	
 	// MARK: - Activity lifecycle events
 	
-	override fun onStart(owner: LifecycleOwner) {
+	override fun onCreate(owner: LifecycleOwner) {
 		super.onCreate(owner)
 		
 		log("onCreate: getting activity")
 		
 		owner as ServerActivity
+		
+		log("onCreate: getting server id")
+		
 		val intent = owner.intent
-		
-		val uri = intent.data
-		var hostname = intent.extras?.getString("hostname")
-		var port: Int = 5600
-		var userInfo: String? = null
-		
-		
-		if (hostname != null) {
-			intent.extras?.getInt("port")?.also { port = it }
+		val server_id = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			intent.getSerializableExtra("server_id", UUID::class.java)
 		} else {
-			hostname = uri?.host
-			uri?.port?.also { port = it }
-			userInfo = uri?.userInfo
+			intent.getSerializableExtra("server_id") as UUID
 		}
 		
-		if (port == -1) port = 5600
 		
-		if (hostname == null) {
+		
+		if (server_id == null) {
+			log("onCreate: server id is null, finishing")
 			owner.finish()
-			log("Hostname is null")
-			return
 		}
 		
-		launch {
-			log("getting info for, $hostname:$port")
-			serverInfoViewModel.fetchInfo(hostname, port)
-			serverSocketRepository.connect(
-				delegate = this@ServerActivityViewModel,
-				hostname = hostname,
-				port = port,
-				userID = userId.value!!,
-				username = username.value!!
-			)
-			serverSocketRepository.getClients()
-			serverSocketRepository.getMessages()
+		if (binder.isConnected() && !binder.isConnectedTo(server_id) ) {
+			log("onCreate: service already connected")
+			binder.disconnect()
 		}
+		
+		
+		log("onCreate: telling service to connect to server id")
+		
+		binder.connect(server_id!!)
 	}
 	
 	override suspend fun onMessageReceived(msg: ClientMessageOutput) {
@@ -192,9 +190,20 @@ class ServerActivityViewModel @Inject constructor(
 	
 	override fun onStop(owner: LifecycleOwner) {
 		super.onDestroy(owner)
+		
 		launch {
 			serverSocketRepository.disconnect()
 		}
+	}
+	
+	
+	
+	override fun onServiceConnected(name: ComponentName, binder: IBinder) {
+		this.binder = binder as ServerConnectionServiceBinder
+	}
+	
+	override fun onServiceDisconnected(p0: ComponentName?) {
+		log("Binder disconnected?")
 	}
 }
 

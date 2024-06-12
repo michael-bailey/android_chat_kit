@@ -1,83 +1,46 @@
 package io.github.michael_bailey.android_chat_kit.repository
 
-import io.github.michael_bailey.android_chat_kit.data_type.ServerData
 import io.github.michael_bailey.android_chat_kit.database.dao.EntServerDao
-import io.github.michael_bailey.android_chat_kit.database.embed.ServerInfo
 import io.github.michael_bailey.android_chat_kit.database.entity.EntServer
 import kotlinx.coroutines.flow.Flow
-import java.security.PublicKey
+import kotlinx.coroutines.flow.map
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * # ServerRepository
+ * This represents a readonly view of saved server information
  *
- * Repository for interacting with saved server data
- *
- * > Don't use this or fetching server data, only th elocal server data store.
- * > This is because this does not fetch anything from the internet
+ * To mutate server data, @see [MutableServerRepository]
  */
 @Singleton
 open class ServerRepository @Inject constructor(
 	private val serverDao: EntServerDao,
-	private val serverInfoRepository: ServerInfoRepository,
-) {
+): Repository() {
+	/** list of all server id's */
+	val allServerIds = serverDao.genServerIds()
 	
-	/// list of all saved servers
-	val serverInfo: Flow<List<ServerData>> = serverInfoRepository.serverInfoList
+	/** list of all servers */
+	val allServers = serverDao.genServers()
 	
-	suspend fun addServer(
-		hostname: String,
-		port: Int = 5600,
-		publicKey: PublicKey? = null
-	): EntServer? {
-		
-		val info = serverInfoRepository.fetchInfo(hostname, port) ?: return null
-		
-		val server = EntServer(
-			host = hostname,
-			port = port,
-			serverInfo = ServerInfo(
-				name = info.name,
-				owner = info.owner,
-				alias = ""
-			)
-		)
-		
-		serverDao.insert(
-			server
-		)
-		
-		return server
+	/** mapping of uuid to hostname */
+	val serverHostnameMap = allServers.map {
+		it.associateBy({ it.uuid }, { it.host })
 	}
 	
-	suspend fun removeServer(uuid: UUID) {
-		serverDao.deleteServer(uuid)
+	/** mapping of uuid to hostname */
+	val serverNameMap = allServers.map {
+		it.associateBy({ it.uuid }, { it.serverInfo?.name })
 	}
 	
-	suspend fun refetch(hostname: String) {
-		serverInfoRepository.refetch(hostname)
+	/** mapping of uuid to hostname */
+	val serverAliasMap = allServers.map {
+		it.associateBy({ it.uuid }, { it.serverInfo?.name })
 	}
 	
-	suspend fun findServer(hostname: String): ServerData? = serverDao.getServer(hostname)?.let {
-		ServerData(
-			uuid = it.uuid,
-			hostname = it.host,
-			port = it.port,
-			name = it.serverInfo?.name ?: "unknown",
-			owner = it.serverInfo?.owner ?: "unknown"
-		)
-	}
+	suspend fun getAllServerIds(): List<UUID> = serverDao.getServerIds()
 	
-	suspend fun findServer(uuid: UUID): ServerData? = serverDao.getServer(uuid)?.let {
-		ServerData(
-			uuid = it.uuid,
-			hostname = it.host,
-			port = it.port,
-			name = it.serverInfo?.name ?: "unknown",
-			owner = it.serverInfo?.owner ?: "unknown"
-		)
-	}
-
+	suspend fun getServer(uuid: UUID) = serverDao.getServer(uuid)
+	
+	fun flowServer(serverId: UUID): Flow<EntServer?> = serverDao.genServer(serverId)
 }

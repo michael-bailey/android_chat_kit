@@ -13,6 +13,6 @@ class ServersViewModel @Inject constructor(
 	private val serverInfoRepository: ServerInfoRepository,
 ): IServersViewModel {
 	override val savedServers: LiveData<List<ServerData>>
-		get() = serverInfoRepository.serverInfoList.asLiveData()
+		get() = serverInfoRepository.servers.asLiveData()
 	
 }

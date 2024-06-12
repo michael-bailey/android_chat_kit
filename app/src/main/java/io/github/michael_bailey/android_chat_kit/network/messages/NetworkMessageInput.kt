@@ -21,7 +21,7 @@ sealed class NetworkMessageInput {
 	@Serializable
 	@SerialName("Connect")
 	data class Connect(
-		@Serializable(with= UUIDSerialiser::class)
+		@Serializable(with=UUIDSerialiser::class)
 		val uuid: UUID,
 		val username: String,
 		val address: String,

@@ -5,9 +5,11 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.hardware.biometrics.BiometricManager
 import android.location.LocationManager
+import androidx.core.content.getSystemService
 import com.google.android.material.color.DynamicColors
 import dagger.hilt.android.HiltAndroidApp
 import io.github.michael_bailey.android_chat_kit.extension.any.log
+import io.github.michael_bailey.android_chat_kit.notifications.StaticNotificationChannels
 import io.github.michael_bailey.android_chat_kit.preferences.DebugPreferencesManager
 import io.github.michael_bailey.android_chat_kit.service.ServerConnectionService
 
@@ -21,18 +23,20 @@ import io.github.michael_bailey.android_chat_kit.service.ServerConnectionService
 @HiltAndroidApp
 class App(
 ): Application() {
+	
+	private val service_intents by lazy {
+		listOf(
+			Intent(this, ServerConnectionService::class.java)
+		)
+	}
 
 	private lateinit var locationService: LocationManager
 	private lateinit var notificationService: NotificationManager
 	private lateinit var biometricsService: BiometricManager
+	private lateinit var notificationManager: NotificationManager
 
 	internal lateinit var appDebugPreferencesManager: DebugPreferencesManager
-
-	private fun createServiceIntent() = Intent(
-		this,
-		ServerConnectionService::class.java
-	)
-
+	
 	override fun onCreate() {
 		super.onCreate()
 		log("onCreate")
@@ -45,15 +49,20 @@ class App(
 			.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 		this.biometricsService = this.baseContext
 			.getSystemService(BIOMETRIC_SERVICE) as BiometricManager
+		
+		this.notificationManager = this.baseContext.getSystemService<NotificationManager>()!!
 
 		appDebugPreferencesManager = DebugPreferencesManager(this)
 		
+		StaticNotificationChannels.setup(this.notificationManager)
+		
+		service_intents.forEach {
+			startService(it)
+		}
 	}
 
 	override fun onTerminate() {
 		super.onTerminate()
 		log("onTerminate: app terminated")
-
-		stopService(createServiceIntent())
 	}
 }

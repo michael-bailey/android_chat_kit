@@ -20,7 +20,7 @@ import io.github.michael_bailey.android_chat_kit.extension.activity.startShareSh
 @Composable
 fun Main() {
 	val activity = (LocalContext.current as ServerShareActivity)
-	val vm = activity.vm
+	val vm = activity.viewModel
 	
 	val name by vm.serverName.observeAsState("loading...")
 	val host by vm.serverHost.observeAsState("loading...")

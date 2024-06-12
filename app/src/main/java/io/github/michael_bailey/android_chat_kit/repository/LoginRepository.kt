@@ -20,6 +20,7 @@ class LoginRepository @Inject constructor(
 	pref: SharedPreferences
 ): Repository() {
 	
+	// todo: change these to not use the preference system, directly.
 	private val usernamePreference: StringPreference = StringPreference("username", pref)
 	private val idPreference: UUIDPreference = UUIDPreference("uuid", pref)
 	

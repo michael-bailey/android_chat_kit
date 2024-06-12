@@ -23,7 +23,7 @@ import io.github.michael_bailey.android_chat_kit.theme.drawerHeader
 @Composable
 fun Main() {
 	
-	val vm = (LocalContext.current as ServerActivity).getViewModel()
+	val vm = (LocalContext.current as ServerActivity).viewModel
 	
 	val selfId by vm.userId.observeAsState()
 	val serverHostname by vm.serverHostname.observeAsState("")
